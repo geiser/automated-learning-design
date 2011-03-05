@@ -1,0 +1,17 @@
+(defproblem testimsldelementsproblem testimsldelements
+  ;; initial state
+  ((learner learner1)
+   (learner learner2)
+   (learner learner3)
+   (learner learner4)
+   (group group1)
+   (role role1)
+   (inGroup learner1 group1)
+   (inGroup learner2 group1)
+   (inRole learner3 role1)
+   (resource resource1)
+   )
+  ;; initial task
+  ((testInsertResource))
+ 
+ )

@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="doc.xsl"type="text/xsl"?>
+<manifest
+	xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+	xmlns:imsld="http://www.imsglobal.org/xsd/imsld_v1p0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1
+						http://www.imsglobal.org/xsd/imscp_v1p1.xsd
+						http://www.imsglobal.org/xsd/imsld_v1p0
+						http://www.imsglobal.org/xsd/IMS_LD_Level_A.xsd"
+	identifier="manifest-c9685143-3881-4fdf-990c-53987496a844"> 
+  <organizations>
+    <imsld:learning-design identifier="imsld-informationofactivitytest2" version="1.0.0" level="C" uri="http://www.ime.usp.br/cg/automatedld/planner/28" sequence-used="false"> 
+      <imsld:title>Control flow Loops</imsld:title> 
+      <imsld:components> 
+        <imsld:roles> 
+          <imsld:learner identifier="r-main-learner"> 
+            <imsld:title>Role principal all student</imsld:title> 
+            <imsld:learner identifier="role-1"> 
+              <imsld:title>role-ref - role-1</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student07imeuspbr"> 
+              <imsld:title>student07imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student27imeuspbr"> 
+              <imsld:title>student27imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="role-2"> 
+              <imsld:title>role-ref - role-2</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student08imeuspbr"> 
+              <imsld:title>student08imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student28imeuspbr"> 
+              <imsld:title>student28imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="role-3"> 
+              <imsld:title>role-ref - role-3</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student06imeuspbr"> 
+              <imsld:title>student06imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student03imeuspbr"> 
+              <imsld:title>student03imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="role-4"> 
+              <imsld:title>role-ref - role-4</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student02imeuspbr"> 
+              <imsld:title>student02imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="role-5"> 
+              <imsld:title>role-ref - role-5</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student04imeuspbr"> 
+              <imsld:title>student04imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="role-6"> 
+              <imsld:title>role-ref - role-6</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="student01imeuspbr"> 
+              <imsld:title>student01imeuspbr</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="role-7"> 
+              <imsld:title>role-ref - role-7</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="role-8"> 
+              <imsld:title>role-ref - role-8</imsld:title> 
+            </imsld:learner> 
+            <imsld:learner identifier="role-9"> 
+              <imsld:title>role-ref - role-9</imsld:title> 
+            </imsld:learner> 
+          </imsld:learner> 
+        </imsld:roles> 
+        <imsld:activities> 
+          <imsld:learning-activity identifier="la-17a83c36-7dce-4f73-892c-bb36955d35f2" isvisible="true"> 
+            <imsld:title>learning-activityanchoredInstruction</imsld:title> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-26b6bf5c-513b-4690-a2cd-8ac6b68a22cf" isvisible="true" identifierref="res-682287045"> 
+                <imsld:title>anchoredInstructionforstudent07%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+          <imsld:learning-activity identifier="la-5ef65a79-602a-4a85-9784-e78c06b6d822" isvisible="true"> 
+            <imsld:title>learning-activityanchoredInstruction</imsld:title> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-89aebd05-c683-47a2-81cd-4be0cad89484" isvisible="true" identifierref="res-2146491066"> 
+                <imsld:title>anchoredInstructionforstudent08%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+          <imsld:learning-activity identifier="la-50b4297b-b9f6-426e-acd2-53bc939a9872" isvisible="true"> 
+            <imsld:title>learning-activitycognitiveFlexibility</imsld:title> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-061c29ee-9249-471b-a592-f9dc01752461" isvisible="true" identifierref="res-1481645187"> 
+                <imsld:title>cognitiveFlexibilityforstudent06%40ime.usp.brstudent03%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+          <imsld:learning-activity identifier="la-85b1019a-181a-456a-b0e4-c187e3014a39" isvisible="true"> 
+            <imsld:title>learning-activityanchoredInstruction</imsld:title> 
+            <imsld:environment-ref ref="env-f6528c78-b082-45a1-88a6-5b9906103da5" /> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-a713bc71-6c69-43a4-af4c-4abb464983cb" isvisible="true" identifierref="res-1366727612"> 
+                <imsld:title>anchoredInstructionforstudent02%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+          <imsld:learning-activity identifier="la-ae008753-8220-4886-91b9-a412ad03771b" isvisible="true"> 
+            <imsld:title>learning-activityanchoredInstruction</imsld:title> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-8f2a8bda-be16-4d26-bfc4-8227146f01ef" isvisible="true" identifierref="res--1555971378"> 
+                <imsld:title>anchoredInstructionforstudent04%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+          <imsld:learning-activity identifier="la-775dcb5d-228a-482e-b504-3a5975015a40" isvisible="true"> 
+            <imsld:title>learning-activitycognitiveFlexibility</imsld:title> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-0f25a7d0-8564-4154-b6bf-8491a55a2144" isvisible="true" identifierref="res-1799437756"> 
+                <imsld:title>cognitiveFlexibilityforstudent07%40ime.usp.brstudent01%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+          <imsld:learning-activity identifier="la-4b2dd486-654e-4dda-b267-62b1d0088757" isvisible="true"> 
+            <imsld:title>learning-activitycognitiveFlexibility</imsld:title> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-19cc9ae8-caf7-4799-accc-99409b93b1b0" isvisible="true" identifierref="res-2048046286"> 
+                <imsld:title>cognitiveFlexibilityforstudent08%40ime.usp.brstudent06%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+          <imsld:learning-activity identifier="la-4d69d641-dd17-4c2f-96c7-dfd6fec69d48" isvisible="true"> 
+            <imsld:title>learning-activityanchoredInstruction</imsld:title> 
+            <imsld:environment-ref ref="env-f87c9632-eb0f-4c04-8977-70a9f6a92eee" /> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-6ed174fa-3c43-45cf-8b06-8c823f1be8da" isvisible="true" identifierref="res--1265083862"> 
+                <imsld:title>anchoredInstructionforstudent07%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+          <imsld:learning-activity identifier="la-e6cfba85-d4ca-4510-b04d-a13b3bff3a69" isvisible="true"> 
+            <imsld:title>learning-activitycognitiveFlexibility</imsld:title> 
+            <imsld:activity-description> 
+              <imsld:item identifier="item-8243093e-bceb-47b0-9626-be9d48ea76c3" isvisible="true" identifierref="res--790398678"> 
+                <imsld:title>cognitiveFlexibilityforstudent02%40ime.usp.brstudent04%40ime.usp.br</imsld:title> 
+              </imsld:item> 
+            </imsld:activity-description> 
+            <imsld:complete-activity> 
+              <imsld:user-choice /> 
+            </imsld:complete-activity> 
+          </imsld:learning-activity> 
+        </imsld:activities> 
+        <imsld:environments> 
+          <imsld:environment identifier="env-f6528c78-b082-45a1-88a6-5b9906103da5"> 
+            <imsld:title>environment-foranchoredInstructionstudent02%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+            <imsld:learning-object identifier="lo-0d782d7e-f19a-4c3c-92c9-08e95fb24959" isvisible="true" type="knowledge-object"> 
+              <imsld:title>learning-objectEvaluateFor+loop</imsld:title> 
+              <imsld:item identifier="item-710d0bcb-615b-405a-ae5b-394f1ba6cc5d" isvisible="true" identifierref="res--599607820" /> 
+            </imsld:learning-object> 
+          </imsld:environment> 
+          <imsld:environment identifier="env-f87c9632-eb0f-4c04-8977-70a9f6a92eee"> 
+            <imsld:title>environment-foranchoredInstructionstudent07%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+            <imsld:learning-object identifier="lo-e45ea321-0dd9-4577-a71a-1ea131932240" isvisible="true" type="knowledge-object"> 
+              <imsld:title>learning-objectCreateWhile+loop</imsld:title> 
+              <imsld:item identifier="item-f6c2313d-49c8-4d54-961d-3ebf5fda8f4e" isvisible="true" identifierref="res-1950108167" /> 
+            </imsld:learning-object> 
+          </imsld:environment> 
+        </imsld:environments> 
+      </imsld:components> 
+      <imsld:method> 
+        <imsld:play identifier="play-d090f69d-9170-4979-845a-a87c17f78995" isvisible="true"> 
+          <imsld:title>CreateWhile+loop</imsld:title> 
+          <imsld:act identifier="act-ce6f04fe-d763-464b-968e-50645239a754"> 
+            <imsld:title>CLPhaseforCreateWhile+loop</imsld:title> 
+            <imsld:role-part identifier="rolepart-031170c3-51a5-4447-9e8c-d18bd6170a28"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-8" /> 
+              <imsld:learning-activity-ref ref="la-4d69d641-dd17-4c2f-96c7-dfd6fec69d48" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-55e7c558-4b5e-4449-8537-9fed17d73b26"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student07imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-4d69d641-dd17-4c2f-96c7-dfd6fec69d48" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-dc7b1d0a-6084-47fd-b4fe-ca993b7d7335"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student28imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-4d69d641-dd17-4c2f-96c7-dfd6fec69d48" /> 
+            </imsld:role-part> 
+          </imsld:act> 
+          <imsld:act identifier="act-8f709781-cb14-4d00-8413-8edc3429046b"> 
+            <imsld:title>CLPhaseforCreateWhile+loop</imsld:title> 
+            <imsld:role-part identifier="rolepart-e8f7d03a-406d-4bbb-964c-f80d627ec933"> 
+              <imsld:title>group-activity-for-learnersstudent02%40ime.usp.brstudent04%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-9" /> 
+              <imsld:learning-activity-ref ref="la-e6cfba85-d4ca-4510-b04d-a13b3bff3a69" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-948f9e7a-57cc-4fab-89bc-264aab94b257"> 
+              <imsld:title>group-activity-for-learnersstudent02%40ime.usp.brstudent04%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student02imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-e6cfba85-d4ca-4510-b04d-a13b3bff3a69" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-85623b6e-8ce7-4d6a-9111-50046074249a"> 
+              <imsld:title>group-activity-for-learnersstudent02%40ime.usp.brstudent04%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student04imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-e6cfba85-d4ca-4510-b04d-a13b3bff3a69" /> 
+            </imsld:role-part> 
+          </imsld:act> 
+        </imsld:play> 
+        <imsld:play identifier="play-ebaa4d10-6b9b-4ae0-86c3-c4121a5ac2c7" isvisible="true"> 
+          <imsld:title>EvaluateFor+loop</imsld:title> 
+          <imsld:act identifier="act-346b79e1-daec-41b5-88ad-4060515e9e4c"> 
+            <imsld:title>CLPhaseforEvaluateFor+loop</imsld:title> 
+            <imsld:role-part identifier="rolepart-2c15950f-1c63-4e4b-bfe6-926bfe0b97d9"> 
+              <imsld:title>group-activity-for-learnersstudent02%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-4" /> 
+              <imsld:learning-activity-ref ref="la-85b1019a-181a-456a-b0e4-c187e3014a39" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-9f2409e9-673b-4144-a048-fd2a4684c432"> 
+              <imsld:title>group-activity-for-learnersstudent02%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student02imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-85b1019a-181a-456a-b0e4-c187e3014a39" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-bba34ed7-0c7e-4ada-bd52-8604f457d520"> 
+              <imsld:title>group-activity-for-learnersstudent02%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student27imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-85b1019a-181a-456a-b0e4-c187e3014a39" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-750c673d-f190-40c2-a4a5-e9d881bed9fd"> 
+              <imsld:title>group-activity-for-learnersstudent04%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-5" /> 
+              <imsld:learning-activity-ref ref="la-ae008753-8220-4886-91b9-a412ad03771b" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-c8f7f340-d51d-4321-97f4-474475298e5d"> 
+              <imsld:title>group-activity-for-learnersstudent04%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student04imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-ae008753-8220-4886-91b9-a412ad03771b" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-df172d4d-d171-4ac7-901c-c5d3f7edb298"> 
+              <imsld:title>group-activity-for-learnersstudent04%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student28imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-ae008753-8220-4886-91b9-a412ad03771b" /> 
+            </imsld:role-part> 
+          </imsld:act> 
+          <imsld:act identifier="act-6f3791d6-df44-4023-b31f-e2ec57d81daa"> 
+            <imsld:title>CLPhaseforEvaluateFor+loop</imsld:title> 
+            <imsld:role-part identifier="rolepart-8ebe2995-4672-4a6c-a8a0-7813cdbb8ff9"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent01%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-6" /> 
+              <imsld:learning-activity-ref ref="la-775dcb5d-228a-482e-b504-3a5975015a40" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-05a5fd33-21a3-428d-8da3-79b8ed725cd7"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent01%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student07imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-775dcb5d-228a-482e-b504-3a5975015a40" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-91634651-d1de-4c4d-ae4c-829a9ee35a63"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent01%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student01imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-775dcb5d-228a-482e-b504-3a5975015a40" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-0e91a96c-a10c-421e-ad58-8bf91baf3aa5"> 
+              <imsld:title>group-activity-for-learnersstudent08%40ime.usp.brstudent06%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-7" /> 
+              <imsld:learning-activity-ref ref="la-4b2dd486-654e-4dda-b267-62b1d0088757" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-864490fb-5862-4a59-85ca-451513a7ec11"> 
+              <imsld:title>group-activity-for-learnersstudent08%40ime.usp.brstudent06%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student08imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-4b2dd486-654e-4dda-b267-62b1d0088757" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-7f5a216f-214f-4039-bc5d-7669b5c7eb92"> 
+              <imsld:title>group-activity-for-learnersstudent08%40ime.usp.brstudent06%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student06imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-4b2dd486-654e-4dda-b267-62b1d0088757" /> 
+            </imsld:role-part> 
+          </imsld:act> 
+        </imsld:play> 
+        <imsld:play identifier="play-cd0cd1fe-03b7-49fc-959e-53675304cb31" isvisible="true"> 
+          <imsld:title>EvaluateDo+while+loop</imsld:title> 
+          <imsld:act identifier="act-f19f36d7-3c95-427d-84cf-41f663dd6c4e"> 
+            <imsld:title>CLPhaseforEvaluateDo+while+loop</imsld:title> 
+            <imsld:role-part identifier="rolepart-29f49ace-1f85-43d0-8fd3-d1f6b5e57556"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-1" /> 
+              <imsld:learning-activity-ref ref="la-17a83c36-7dce-4f73-892c-bb36955d35f2" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-e27b341f-672b-4d9c-9317-0dd36b4ad8f8"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student07imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-17a83c36-7dce-4f73-892c-bb36955d35f2" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-4ab60113-0883-4790-b2f4-c26a6ca4daf1"> 
+              <imsld:title>group-activity-for-learnersstudent07%40ime.usp.brstudent27%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student27imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-17a83c36-7dce-4f73-892c-bb36955d35f2" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-e26e18b7-2007-4087-87f6-6c7115e3bc1a"> 
+              <imsld:title>group-activity-for-learnersstudent08%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-2" /> 
+              <imsld:learning-activity-ref ref="la-5ef65a79-602a-4a85-9784-e78c06b6d822" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-d70a46d2-760c-4b80-9892-d35b10f0230f"> 
+              <imsld:title>group-activity-for-learnersstudent08%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student08imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-5ef65a79-602a-4a85-9784-e78c06b6d822" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-a720fd07-9d9f-4cdb-a42f-5c072600eed9"> 
+              <imsld:title>group-activity-for-learnersstudent08%40ime.usp.brstudent28%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student28imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-5ef65a79-602a-4a85-9784-e78c06b6d822" /> 
+            </imsld:role-part> 
+          </imsld:act> 
+          <imsld:act identifier="act-52573069-d4f2-45a0-93bc-0ea6113c6886"> 
+            <imsld:title>CLPhaseforEvaluateDo+while+loop</imsld:title> 
+            <imsld:role-part identifier="rolepart-754bccbb-03be-42c3-86b5-4c3bd4aa43c5"> 
+              <imsld:title>group-activity-for-learnersstudent06%40ime.usp.brstudent03%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="role-3" /> 
+              <imsld:learning-activity-ref ref="la-50b4297b-b9f6-426e-acd2-53bc939a9872" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-ceb8c1fc-8a00-4176-b04c-27e1ce36e612"> 
+              <imsld:title>group-activity-for-learnersstudent06%40ime.usp.brstudent03%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student06imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-50b4297b-b9f6-426e-acd2-53bc939a9872" /> 
+            </imsld:role-part> 
+            <imsld:role-part identifier="rolepart-8016970b-50bc-4495-885e-5b7efdbaa03d"> 
+              <imsld:title>group-activity-for-learnersstudent06%40ime.usp.brstudent03%40ime.usp.br</imsld:title> 
+              <imsld:role-ref ref="student03imeuspbr" /> 
+              <imsld:learning-activity-ref ref="la-50b4297b-b9f6-426e-acd2-53bc939a9872" /> 
+            </imsld:role-part> 
+          </imsld:act> 
+        </imsld:play> 
+      </imsld:method> 
+    </imsld:learning-design> 
+  </organizations> 
+  <resources> 
+    <resource identifier="res-682287045" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/anchoredInstruction?instructors=student07%40ime.usp.br&amp;learners=student27%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Evaluate&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FDo_while_loop" /> 
+    <resource identifier="res-2146491066" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/anchoredInstruction?instructors=student08%40ime.usp.br&amp;learners=student28%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Evaluate&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FDo_while_loop" /> 
+    <resource identifier="res-1481645187" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/cognitiveFlexibility?instructors=student06%40ime.usp.br&amp;learners=student03%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Evaluate&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FDo_while_loop" /> 
+    <resource identifier="res-1366727612" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/anchoredInstruction?instructors=student02%40ime.usp.br&amp;learners=student27%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Evaluate&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FFor_loop" /> 
+    <resource identifier="res--599607820" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/1" /> 
+    <resource identifier="res--1555971378" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/anchoredInstruction?instructors=student04%40ime.usp.br&amp;learners=student28%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Evaluate&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FFor_loop" /> 
+    <resource identifier="res-1799437756" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/cognitiveFlexibility?instructors=student07%40ime.usp.br&amp;learners=student01%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Evaluate&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FFor_loop" /> 
+    <resource identifier="res-2048046286" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/cognitiveFlexibility?instructors=student08%40ime.usp.br&amp;learners=student06%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Evaluate&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FFor_loop" /> 
+    <resource identifier="res--1265083862" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/anchoredInstruction?instructors=student07%40ime.usp.br&amp;learners=student28%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Create&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FWhile_loop" /> 
+    <resource identifier="res-1950108167" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/2" /> 
+    <resource identifier="res--790398678" type="webcontent" href="http://localhost:8088/automated-learning-design/resources/info/activity/cognitiveFlexibility?instructors=student02%40ime.usp.br&amp;learners=student04%40ime.usp.br&amp;skillId=_http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBloom%2527s_Taxonomy%23Create&amp;knowledgeId=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FWhile_loop" /> 
+  </resources> 
+</manifest>

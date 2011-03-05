@@ -1,0 +1,495 @@
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+   ;; Axioms for CL unit 
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;#   (:- (getMaxAttempts ?r)
+;#     ((maxAttempts ?maxAttempts)(assign ?r ?maxAttempts))
+;#     ((assign ?r 4)))
+;#   
+;#   (:- (getMaxPerStrategy ?r)
+;#     ((maxPerStrategy ?maxPerStrategy)(assign ?r ?maxPerStrategy))
+;#     ((assign ?r 1)))
+;#   
+;#   (:- (sortByKnowledge ?result ?competences)
+;#     (assign ?result ?competences))
+;#   
+;#   
+;#   ;; O axioma não procura por ciclos (?visited) pois ele não existe no modelo
+;#   ;; GMIP (Growth Model Improved by Patterns)
+;#   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialSkill ?goalSkill)(same ?initialKnowledge ?goalKnowledge)(assign ?result nil)))
+;#   ;; strategy = learning by being taught, role = anchor holder
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialKnowledge nothing)
+;#      (getPath ?resultTemp ?initialSkill tuning
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByBeingTaught anchorHolder
+;#                                              ?initialSkill nothing
+;#                                              ?initialSkill tuning) . ?resultTemp))))
+;#   ;; strategy = learning by diagnosing, role = anchored instructor
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialSkill explanatory)
+;#      (same ?initialKnowledge accretion)
+;#      (getPath ?resultTemp associative tuning
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByDiagnosing anchoredInstructor
+;#                                             explanatory accretion
+;#                                             associative tuning) . ?resultTemp)))
+;#     ((same ?initialSkill explanatory)
+;#      (same ?initialKnowledge restructuring)
+;#      (getPath ?resultTemp associative restructuring
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByDiagnosing anchoredInstructor
+;#                                             explanatory restructuring
+;#                                             associative restructuring) . ?resultTemp))))
+;#   ;; strategy = learning by apprenticeship, role = apprenticeship
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialSkill nothing)
+;#      (getPath ?resultTemp associative ?initialKnowledge
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByApprenticeship apprenticeship
+;#                                                 nothing ?initialKnowledge
+;#                                                 associative ?initialKnowledge) . ?resultTemp))))
+;#   ;; strategy = learning by guiding, role = master
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialSkill associative)
+;#      (getPath ?resultTemp autonomous ?initialKnowledge
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByGuiding master
+;#                                          associative ?initialKnowledge
+;#                                          autonomous ?initialKnowledge) . ?resultTemp))))
+;#   ;; strategy = learning by reflection, role = audience
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialKnowledge tuning)
+;#      (getPath ?resultTemp ?initialSkill restructuring
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByReflection audience
+;#                                             ?initialSkill tuning ?initialSkill restructuring) . ?resultTemp))))
+;#   ;; strategy = learning by selfexpression, role = panelist
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialSkill explanatory)
+;#      (getPath ?resultTemp associative ?initialKnowledge
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningBySelfexpression panelist
+;#                                                 explanatory ?initialKnowledge
+;#                                                 associative ?initialKnowledge) . ?resultTemp))))
+;#   ;; strategy = learning by discussion, role = full participant
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialSkill associative)
+;#      (or (same ?initialKnowledge tuning)
+;#          (same ?initialKnowledge restructuring))
+;#      (getPath ?resultTemp autonomous ?initialKnowledge
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByDiscussion fullParticipant
+;#                                             associative ?initialKnowledge
+;#                                             autonomous ?initialKnowledge) . ?resultTemp)))
+;#     ((same ?initialKnowledge tuning)
+;#      (or (same ?initialSkill associative)
+;#          (same ?initialSkill autonomous))
+;#      (getPath ?resultTemp ?initialSkill restructuring
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByDiscussion fullParticipant
+;#                                             ?initialSkill tuning
+;#                                             ?initialSkill restructuring) . ?resultTemp))))
+;#   ;; strategy = learning by practice, role = peripheral participant
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialSkill nothing)
+;#      (getPath ?resultTemp associative ?initialKnowledge
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByPractice panelist
+;#                                           nothing ?initialKnowledge
+;#                                           associative ?initialKnowledge) . ?resultTemp))))
+;#   ;; strategy = learning by being taught, role = peer tutee
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialKnowledge nothing)
+;#      (getPath ?resultTemp ?initialSkill accretion
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByBeingTaught peerTutee
+;#                                              ?initialSkill nothing
+;#                                              ?initialSkill accretion . ?resultTemp)))))
+;#   ;; strategy = learning by teaching, role = peer tutor
+;#   (:- (getPath ?result ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge)
+;#     ((same ?initialKnowledge accretion)
+;#      (getPath ?resultTemp ?initialSkill tuning
+;#                           ?goalSkill ?goalKnowledge)
+;#      (assign ?result ((learningByTeaching peerTutor
+;#                                           ?initialSkill accretion
+;#                                           ?initialSkill tuning) . ?resultTemp))))
+;#   
+;#   (:- (getLearnersWithStrategy ?result ?skill ?knowledge ?strategy nil)((assign ?result nil)))
+;#   (:- (getLearnersWithStrategy ?result ?skill ?knowledge ?strategy (?learner . ?learners))
+;#     ;; learningByBeingTaught
+;#     ((same ?strategy learningByBeingTaught)
+;#      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+;#      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+;#      (same ?currentSkill ?goalSkill)
+;#      (same ?currentKnowledge nothing)(same ?goalKnowledge tuning)
+;#      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+;#      (assign ?result (?learner . ?tmpResult)))
+;#     ;; learningByDiagnosing
+;#     ((same ?strategy learningByDiagnosing)
+;#      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+;#      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+;#      (same ?currentSkill explanatory)(same ?goalSkill associative)
+;#      (or ((same ?currentKnowledge accretion)(same ?goalKnowledge tuning))
+;#          ((same ?currentKnowledge restructuring)(same ?goalKnowledge restructuring)))
+;#      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+;#      (assign ?result (?learner . ?tmpResult)))
+;#     ;; learningByApprenticeship
+;#     ((same ?strategy learningByApprenticeship)
+;#      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+;#      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+;#      (same ?currentSkill nothing)(same ?goalSkill associative)
+;#      (same ?currentKnowledge ?goalKnowledge)
+;#      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+;#      (assign ?result (?learner . ?tmpResult)))
+;#     ;; learningByGuiding
+;#     ((same ?strategy learningByGuiding)
+;#      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+;#      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+;#      (same ?currentSkill associative)(same ?currentSkill autonomous)
+;#      (same ?currentKnowledge ?goalKnowledge)
+;#      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+;#      (assign ?result (?learner . ?tmpResult)))
+;#     ;; learningByReflection
+;#     ((same ?strategy learningByReflection)
+;#      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+;#      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+;#      (same ?currentSkill ?goalSkill)
+;#      (same ?currentKnowledge tuning)(same ?goalKnowledge restructuring) 
+;#      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+;#      (assign ?result (?learner . ?tmpResult)))
+;#     ;; learningBySelfexpression
+;#     ((same ?strategy learningBySelfexpression)
+;#      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+;#      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+;#      (same ?currentSkill explanatory)(same ?goalSkill associative)
+;#      (same ?currentKnowledge ?goalKnowledge)
+;#      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+;#      (assign ?result (?learner . ?tmpResult)))
+;#     ;; learningByDiscussion
+;#     ((same ?strategy learningBySelfexpression)
+;#      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+;#      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+;#      (or ((same ?currentSkill associative)(same ?goalSkill autonomous)
+;#           (same ?currentKnowledge ?goalKnowledge)
+;#           (or (same ?currentKnowledge tuning)(same ?currentKnowledge restructuring)))
+;#          ((same ?currentKnowledge tuning)(same ?goalKnowledge restructuring)
+;#           (same ?currentSkill ?goalSkill)
+;#           (or (same ?currentSkill associative)(same ?currentSkill autonomous))))
+;#      (same ?currentKnowledge ?goalKnowledge)
+;#      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+;#      (assign ?result (?learner . ?tmpResult)))
+;#     ;; learningByPractice
+;#     ((same ?strategy learningByPractice)
+;#      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+;#      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+      (same ?currentSkill nothing)(same ?goalSkill associative)
+      (same ?currentKnowledge ?goalKnowledge) 
+      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+      (assign ?result (?learner . ?tmpResult)))
+     ;; learningByBeingTaught
+     ((same ?strategy learningByBeingTaughtTutee)
+      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+      (same ?currentSkill ?goalSkill)
+      (same ?currentKnowledge nothing)(same ?goalKnowledge accretion)
+      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+      (assign ?result (?learner . ?tmpResult)))
+     ;; learningByTeaching
+     ((same ?strategy learningByTeaching)
+      (skill ?skill ?learner ?currentSkill)(goal ?learner ?skill ?goalSkill)
+      (knowledge ?knowledge ?learner ?currentKnowledge)(goal ?learner ?knowledge ?goalKnowledge)
+      (same ?currentSkill ?goalSkill)
+      (same ?currentKnowledge accretion)(same ?goalKnowledge tuning)
+      (getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+      (assign ?result (?learner . ?tmpResult)))
+     ;; else case
+     ((getLearnersWithStrategy ?tmpResult ?skill ?knowledge ?strategy ?learners)
+      (assign ?result ?tmpResult)))
+   
+   (:- (getGroupGoals ?result ((?skill ?goalSkill ?knowledge ?goalKnowledge) . ?competences))
+     ((assign ?result ((?skill ?knowledge learningByBeingTaught learningByDiagnosing)
+                       (?skill ?knowledge learningByApprenticeship learningByGuiding)
+                       (?skill ?knowledge learningByReflection learningBySelfexpression)
+                       (?skill ?knowledge learningByDiscussion learningByDiscussion)
+                       (?skill ?knowledge learningByPractice learningByDiscussion)
+                       (?skill ?knowledge learningByBeingTaughtTutee learningByTeaching)))))
+   
+   ;; tamanho de listas
+   (:- (length ?result ?list)(assign ?result (call GetLength ?list)))
+   
+   ;; find role
+   (:- (getRole ?role ?strategy)
+     ((same ?strategy learningByBeingTaught)
+      (assign ?role anchorHolder))
+     ((same ?strategy learningByDiagnosing)
+      (assign ?role anchoredInstructor))
+     ((same ?strategy learningByApprenticeship)
+      (assign ?role apprenticeship))
+     ((same ?strategy learningByGuiding)
+      (assign ?role master))
+     ((same ?strategy learningByReflection)
+      (assign ?role audience))
+     ((same ?strategy learningBySelfexpression)
+      (assign ?role panelist))
+     ((same ?strategy learningByDiscussion)
+      (assign ?role fullParticipant))
+     ((same ?strategy learningByPractice)
+      (assign ?role peripheralParticipant))
+     ((same ?strategy learningByBeingTaughtTutee)
+      (assign ?role peerTutee))
+     ((same ?strategy learningByTeaching)
+      (assign ?role peerTutor)))
+   
+   ;; axioma para formar o grupo
+   (:- (divideGroupInSubGroups ?result ?group ?groupLength ?maxLength ?n)
+     ((assign ?m (call Div ?groupLength ?n))
+      (call <= ?m ?maxLength)
+      (assign ?result (call Split ?group ?m ?n)))
+     ;; else case
+     ((assign ?result (call Split ?group ?maxLength ?n))))
+   
+   ;; axioma para calcular o numero mínimo de grupos a serem formados
+   (:- (calculeMinNumGroups ?min nil)(assign ?min 10))
+   (:- (calculeMinNumGroups ?min ((?length ?minLength) . ?infoGroups))
+     ((calculeMinNumGroups ?minTmp ?infoGroups)
+      (assign ?value (call Div ?length ?minLength))
+      (call < ?value ?minTmp)
+      (assign ?min ?value))
+     ;; else case
+     ((calculeMinNumGroups ?minTmp ?infoGroups)
+      (assign ?min ?minTmp)))
+   
+   (:- (getTheory ?theory (?skill ?knowledge ?pStrategy ?sStrategy))
+     ((same ?pStrategy learningByBeingTaught)
+      (same ?sStrategy learningByDiagnosing)
+      (assign ?theory anchoredInstruction))
+     
+     ((same ?pStrategy learningByApprenticeship)
+      (same ?sStrategy learningByGuiding)
+      (assign ?theory cognitiveApprenticeship))
+     
+     ((same ?pStrategy learningByReflection)
+      (same ?sStrategy learningBySelfexpression)
+      (assign ?theory cognitiveFlexibility))
+     
+     ((same ?pStrategy learningByDiscussion)
+      (same ?sStrategy learningByDiscussion)
+      (assign ?theory distributedCognition))
+     
+     ((same ?pStrategy learningByPractice)
+      (same ?sStrategy learningByDiscussion)
+      (assign ?theory lpp))
+     
+     ((same ?pStrategy learningByBeingTaughtTutee)
+      (same ?pStrategy learningByTeaching)
+      (assign ?theory peerTutoring))
+     
+     ((assign ?theory extremeTeory)))
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   (:method (trainCL ?c)
+     ((learners ?learners))
+     ((trainCL! ?c ?learners))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (setRolesAndTrainCompetences ?comps nil)()())
+   (:method (setRolesAndTrainCompetences ?comps (?learner . ?learners))
+     ()
+     ((setRolesAndTrain ?comps ?learner)
+      (setRolesAndTrainCompetences ?comps ?learners)))
+   
+   (:method (setRolesAndTrain nil ?learner)()((!!addInWorldState (train ?c ?learner))))
+   (:method (setRolesAndTrain ((?s ?sl ?k ?kl). ?comps) ?learner)
+     ((skill ?s ?learner ?sl)
+      (knowledge ?k ?learner ?kl))
+     ((setRolesAndTrain ?comps ?learner))
+     ;; fall-back 
+     ()
+     ())
+   
+   (:method (trainCL! ?c ?learners)
+     ((getCompetences ?comps ?c autonomous restructuring)
+      (assign ?newRole (call GetNewRole ?learners)))
+     ((addUsersToRole ?learners ?newRole)
+      (!startLDElement role-part ((title train-CL-activity)))
+      (!startLDElement role-ref (?newRole))
+      (!endLDElement role-ref)
+      (!startLDElement learning-activity ((title TrainCL ?c)(description Train Collaborative ?c for ?learners)) (trainCL! (?c ?learners)))
+      (createCLUoL! ?comps ?learners)
+      (!endLDElement learning-activity)
+      (!endLDElement role-part)
+      (setRolesAndTrainCompetences ?comps ?learners)))
+   
+   (:method (createCLUoL! ?unsortComps ?learners)
+     ((sortByKnowledge ?comps ?unsortComps))
+     ((!startLDElement ld ((title CLUnit)(description CLUnit ?comps for ?learners)) (createCLUoL (?unsortComps ?learners)))
+      (planningCLUoL ?comps ?learners)
+      (!endLDElement ld)))
+   
+   (:method (planningCLUoL nil ?learners)()())
+   (:method (planningCLUoL ((?skill ?goalSkill ?knowledge ?goalKnowledge) . ?competences) ?learners)
+     ((getMaxAttempts ?max))
+     ((setSkillKnowledge ?skill ?knowledge ?learners)
+      (!startLDElement play ())
+      (planningWithCLSteps  (?skill ?goalSkill ?knowledge ?goalKnowledge)
+                            ?learners ?learners 1 ?max)
+      (!endLDElement play)
+      (planningCLUoL ?competences ?learners)))
+   
+   (:method (setSkillKnowledge ?s ?k nil)()())
+   (:method (setSkillKnowledge ?s ?k (?learner . ?learners))
+     ((assign ?sl (call GetCurrentSkill ?s ?learner))
+      (assign ?kl (call GetCurrentKnowledge ?k ?learner)))
+     ((!!addInWorldState (skill ?s ?learner ?sl))
+      (!!addInWorldState (knowledge ?k ?learner ?kl))
+      (setSkillKnowledge ?s ?k ?learners)))
+   
+   (:method (planningWithCLSteps  (?skill ?goalSkill ?knowledge ?goalKnowledge)
+                                  (?learner . ?learners) ?all ?attempts ?max)
+     ((skill ?skill ?learner ?initialSkill)
+      (knowledge ?knowledge ?learner ?initialKnowledge)
+      (getPath ?path ?initialSkill ?initialKnowledge ?goalSkill ?goalKnowledge))
+     ((setGoalsForStep ?path ?skill ?knowledge ?learner)
+      (planningWithCLSteps  (?skill ?goalSkill ?knowledge ?goalKnowledge) ?learners
+                            ?all ?attempts ?max))
+     ()
+     ((planningWithCLSteps  (?skill ?goalSkill ?knowledge ?goalKnowledge) ?learners
+                            ?all ?attempts ?max)))
+   
+   (:method (planningWithCLSteps  (?skill ?goalSkill ?knowledge ?goalKnowledge) nil
+                                  ?all ?attempts ?max)
+     ((call > ?attempts ?max)) ;(or(not (inGroup ?anyLearner ?anyGroup)))
+     ()
+     
+     ()
+     ((createCLPhase ((?skill ?goalSkill ?knowledge ?goalKnowledge)) ?all)
+      (planningWithCLSteps  (?skill ?goalSkill ?knowledge ?goalKnowledge) ?all
+                            ?all (call + ?attempts 1) ?max)))
+   
+   ;; set goal for one step and one learner 
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   (:method (setGoalsForStep nil ?skill ?knowledge ?learner)()())
+   (:method (setGoalsForStep ((?strategy ?role ?skillInitial ?knowledgeInitial ?skillGoal ?knowledgeGoal) . ?path)
+                             ?skill ?knowledge ?learner)
+     ((goal ?learner ?skill ?anySkillGoal)
+      (goal ?learner ?knowledge ?anyKnowledgeGoal))
+     ((!!removeFromWorldState (goal ?learner ?skill ?anySkillGoal))
+      (!!removeFromWorldState (goal ?learner ?knowledge ?anyKnowledgeGoal))
+      (!!addInWorldState (goal ?learner ?skill ?skillGoal))
+      (!!addInWorldState (goal ?learner ?knowledge ?knowledgeGoal)))
+     
+     ()
+     ((!!addInWorldState (goal ?learner ?skill ?skillGoal))
+      (!!addInWorldState (goal ?learner ?knowledge ?knowledgeGoal))))
+   
+      ;; create CL Phase this create an act and select learners to form groups this use to perform CL group
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   (:method (createCLPhase ?competences ?learners)
+     ((getMaxPerStrategy ?max)
+      (getGroupGoals ?groupGoals ?competences))
+     ((removeGroupsForLearners ?learners)
+      (!startLDElement act ((title CLPhase ?competences)))
+      (planningCLPhase ?groupGoals ?learners ?max)
+      (!endLDElement act)))
+   
+   ;; remove ?learner of group but group formation is based in roles
+   (:method (removeGroupsForLearners nil)()())
+   (:method (removeGroupsForLearners (?learner . ?learners))
+     ((role ?learner ?role))
+     ((!removeUserFromRole ?learner ?role)
+      (removeGroupsForLearners ?learners))
+     ;; case else
+     ()
+     ((removeGroupsForLearners ?learners)))
+      
+   (:method (planningCLPhase nil ?learners ?max)()())
+   (:method (planningCLPhase ((?skill ?knowledge ?pStrategy ?sStrategy) . ?groupGoals) ?learners ?max)
+     ((getLearnersWithStrategy ?pGroup ?skill ?knowledge ?pStrategy ?learners)
+      (getLearnersWithStrategy ?sGroup ?skill ?knowledge ?sStrategy ?learners)
+      (length ?lengthPGroup ?pGroup)(call >= ?lengthPGroup 1)
+      (length ?lengthSGroup ?sGroup)(call >= ?lengthSGroup 1)
+      (assign ?group (call Concat ?pGroup ?sGroup)))
+     ((planningByTheory ?skill ?knowledge ?pStrategy ?sStrategy
+                        ?pGroup ?lengthPGroup ?max
+                        ?sGroup ?lengthSGroup ?max)
+      (planningCLPhase ?groupGoals ?learners ?max))
+     
+     ()
+     ((planningCLPhase ?groupGoals ?learners ?max)))
+   
+   (:method (planningByTheory ?skill ?knowledge ?pStrategy ?sStrategy
+                              ?pGroup ?lengthPGroup ?maxPerPGroup
+                              ?sGroup ?lengthSGroup ?maxPerSGroup)
+     ((call <= ?lengthPGroup ?maxPerPGroup)
+      (call <= ?lengthSGroup ?maxPerSGroup))
+     ((createByInstruction ?skill ?knowledge ?pStrategy ?sStrategy (?pGroup)(?sGroup)))
+
+     ((calculeMinNumGroups ?n ((?lengthPGroup 1)(?lengthSGroup 1)))
+      (divideGroupInSubGroups ?pGroups ?pGroup ?lengthPGroup ?maxPerPGroup ?n)
+      (divideGroupInSubGroups ?sGroups ?sGroup ?lengthSGroup ?maxPerSGroup ?n))
+     ((createByInstruction ?skill ?knowledge ?pStrategy ?sStrategy ?pGroups ?sGroups)))
+   
+   (:method (createByInstruction ?skill ?knowledge ?pStrategy ?sStrategy nil nil)()())
+   (:method (createByInstruction ?skill ?knowledge ?pStrategy ?sStrategy
+                                 (?pGroup . ?pGroups)(?sGroup . ?sGroups))
+     ((assign ?group (call Concat ?pGroup ?sGroup))
+      (getRole ?pRole ?pStrategy)
+      (getRole ?sRole ?sStrategy))
+     ((addUsersToRole ?pGroup ?pRole)
+      (addUsersToRole ?sGroup ?sRole)
+      (createCLGroupActivity ((?skill ?knowledge ?pStrategy ?sStrategy)) ?group)
+      (createByInstruction ?skill ?knowledge ?pStrategy ?sStrategy ?pGroups ?sGroups)))
+   
+   (:method (createCLGroupActivity ?groupGoals ?learners)
+     ((assign ?newRole (call GetNewRole ?learners)))
+     ((addUsersToRole ?learners ?newRole)
+      (!startLDElement role-part ((title cl-activity)))
+      (!startLDElement role-ref (?newRole))
+      (!endLDElement role-ref)
+      (planningCLGroupActivity ?groupGoals ?learners)
+      (!endLDElement role-part)))
+   
+   (:method (planningCLGroupActivity nil ?learners)()())
+   (:method (planningCLGroupActivity (?groupGoal . ?groupGoals) ?learners)
+     ()
+     ((createCLSession ?groupGoal ?learners)
+      (planningCLGroupActivity ?groupGoals ?learners)))
+   
+   (:method (createCLSession ?groupGoal ?learners)
+     ((getTheory ?theory ?groupGoal))
+     ((!startLDElement learning-activity ((title learning-activity ?theory)(description ?theory)))
+      (!dynamicTask executeSession! (?theory ?groupGoal ?learners))
+      (!endLDElement learning-activity)
+      (onCLSessionCompletedForLearners ?groupGoal ?learners))
+     ;;fall-back
+     ()
+     ())
+   
+   (:method (onCLSessionCompletedForLearners (?skill ?knowledge ?pStrategy ?sStrategy) nil)()())
+   (:method (onCLSessionCompletedForLearners (?skill ?knowledge ?pStrategy ?sStrategy) (?learner . ?learners))
+     ((skill ?skill ?learner ?currentSkill)
+      (knowledge ?knowledge ?learner ?currentKnowledge)
+      (goal ?learner ?skill ?goalSkill)
+      (goal ?learner ?knowledge ?goalKnowledge))
+     ((!!removeFromWorldState (skill ?skill ?learner ?currentSkill))
+      (!!removeFromWorldState (knowledge ?knowledge ?learner ?currentKnowledge))
+      (!!removeFromWorldState (goal ?learner ?skill ?goalSkill))
+      (!!removeFromWorldState (goal ?learner ?knowledge ?goalKnowledge))
+      (!!addInWorldState (skill ?skill ?learner ?goalSkill))
+      (!!addInWorldState (knowledge ?skill ?learner ?goalKnowledge))
+      (onCLSessionCompletedForLearners (?skill ?knowledge ?pStrategy ?sStrategy) ?learners))
+     
+     ()
+     ((!!addInWorldState (algoErrado ?learner ?skill ?knowledge))
+      (onCLSessionCompletedForLearners (?skill ?knowledge ?pStrategy ?sStrategy) ?learners)))
+   
+   
+   
+   
+   
+   

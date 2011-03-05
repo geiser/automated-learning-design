@@ -1,0 +1,158 @@
+(defdomain testimsldelements
+  ;; domain definition
+  (
+   
+
+   (:operator (!startLDElement ?element)()()())
+   (:operator (!startLDElement ?element ?parameters)()()())
+   (:operator (!startLDElement ?element ?parameters ?task)()()())
+   (:operator (!endLDElement ?element)()()())
+   
+   (:method (testmulti)
+     ()
+     (:unordered
+       ((!startLDElement a1)
+        (!startLDElement a2))
+       ((!startLDElement b1)
+        (:unordered (!startLDElement b21)
+          (!startLDElement b22)))
+       ;((!startLDElement c1)
+       ; (!startLDElement c4))
+       ))
+   
+   (:method (test)
+     ()
+     (;(testCreateLDElements! training (student01 student02 student03))
+      (testmulti)))
+   
+   
+   (:method (testCreateLDElements! ?p1 ?p2)
+     ()
+     ((!startLDElement ld ((identifier ld-teste-simplified) 
+                           (version a0_09a) ; optional = true
+                           (uri http_www_ime_usp_brcgcourseware_354)
+                           (level B) ; optional = true
+                           (sequence-used false) ; only true to when IMS-SS can be inserted at the apropiate places of the document instances
+                           (title teste-simplified)) ; title is included how attribute although it is a ld element becouse only include a simple string --> Note: this element is included in all ld elements
+                       (testCreateLDElements! (?p1 ?p2))) ;; ?p2 -> must be a list
+          (!startLDElement play ((identifier act-individualized-learning) ; optional = true
+                                 (isvisible true))
+                           (createLDPlay! (?p1)))
+              (!startLDElement act ((identifier act-motivation-in-context) ; optional = true
+                                    (title motivation-in-context)) ;optional = true
+                               (createLDAct! (?p2 constante)))
+                  (!startLDElement role-part ((identifier rpart-motivation-topic-01) ; optional=true
+                                              (title motivation-topic-01)            ; optional=true
+                                              (role-ref role-ind-01)))               ; this is another ld element included how attribute becouse only exits one element
+                        (!startLDElement activity-structure ((identifier as-preparation); optional=true
+                                                             (number-to-select 3)       ; optional=true -> the activity structure is completed when the total number of activity is completed
+                                                             (structure-type selection) ; optional=true -> sequence or selection structure
+                                                             (title preparation)))       ; optional=true
+                            (!startLDElement learning-activity ((identifier la-versailles-overview)
+                                                                (isvisible true)
+                                                                (title versailles-overview))) ; optional-true
+                                 (!startLDElement activity-description ((title versalles-overview-description)) ;optional
+                                                  (insertDescription! (task versailles-overview)))
+                                     (!insertResource http_www_ime_usp_brcgresource01)
+                                 (!endLDElement activity-description)
+                            (!endLDElement learning-activity)
+                            (!startLDElement learning-activity ((title versailles-training)))
+                                 (!startLDElement activity-description ((title versalles-overview-description)))
+                                 (!endLDElement activity-description)
+                                 (!startLDElement environment ((identifier env-environment-group01)
+                                                               (title environment-group01)))
+                                     (!startLDElement learning-object ((identifier lo-complex-01)
+                                                                       (isvisible true)        ; optional=true
+                                                                       (class class-exercise)  ; optional=true
+                                                                       (type knowledge-object) ; optional=true -> learning vocabulary is learning-resource-type element of LOM (IEEE)
+                                                                       (title complex-01)))
+                                         (!insertResource http_www_ime_usp_brcgresource01 learner01)
+                                         (!insertResource http_www_ime_usp_brcgresource01 learner02)
+                                     (!endLDElement learning-object)
+                                 (!endLDElement environment)
+                            (!endLDElement learning-activity)
+                        (!endLDElement activity-structure)
+                  (!endLDElement role-part)
+                  (!startLDElement role-part ((identifier rpart-motivation-topic-02)
+                                              (title motivation-topic-02)
+                                              (role-ref role-ind-02)))
+                      (!startLDElement learning-activity ((identifier la-resource-01)))
+                         (!startLDElement activity-description ((title rough-overview-description)))
+                             (!insertResource http_www_ime_usp_brcgresource04)
+                         (!endLDElement activity-description)
+                      (!endLDElement learning-activity)
+                  (!endLDElement role-part)
+              (!endLDElement act)
+              (!startLDElement act)
+                  (!startLDElement role-part ((identifier rpart-evaluation-topic-02)
+                                              (title evaluation-topic-02)
+                                              (role-ref role-participant-01)))
+                      (!startLDElement activity-structure)
+                          (!startLDElement learning-activity ((identifier la-peer-tutoring-topic01)))
+                             (!startLDElement activity-description ((title peer-tutoring-topic01)))
+                                 (!insertResource http_www_ime_usp_brcgpeer-tutoring-topic01)
+                             (!endLDElement activity-description)
+                          (!endLDElement learning-activity)
+                      (!endLDElement activity-structure)
+                  (!endLDElement role-part)
+              (!endLDElement act)
+          (!endLDElement play)
+      
+          (!startLDElement play ((identifier act-collaborative-learning) ; optional = true
+                                 (isvisible false))
+                           (createCollaborativeLplay (?p2)))
+              (!startLDElement act)
+                  (!startLDElement role-part ((identifier rpart-group-topic-02)
+                                              (title group-topic-02)
+                                              (role-ref role-group-01)))
+                      (!startLDElement learning-activity ())
+                          (!startLDElement activity-description ((title anchored-instruction-topic05)))
+                              (!insertResource http_www_ime_usp_cganchored-instruction-topic05 learner4)
+                          (!endLDElement activity-description)
+                      (!endLDElement learning-activity)
+                  (!endLDElement role-part)
+              (!endLDElement act)
+          (!endLDElement play)
+      (!endLDElement ld)))
+
+
+   (:method (testInsertResource)
+     ((resource ?r)
+      (group ?g)
+      (role ?role)
+      (learner ?l))
+     ((!insertResource ?r)
+      (!insertResource ?r ?g)
+      (!insertResource ?r learner4)
+      (!insertResource ?r ?role)))
+   
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   (:operator (!insertResource ?r)
+     ()
+     ()
+     ())
+
+   (:operator (!insertResource ?r ?l)
+     ((learner ?l))
+     ()
+     ((inserted ?r ?l)))
+
+   (:operator (!insertResource ?r ?g)
+     ((group ?g))
+     ()
+     ((forall (?l)
+              ((inGroup ?l ?g))
+              ( (inserted ?r ?l)))))
+
+   (:operator (!insertResource ?r ?role)
+     ((role ?role))
+     ()
+     ((forall (?l)
+              ((inRole ?l ?role))
+              ( (inserted ?r ?l)))))
+   
+   
+   
+      
+   ))

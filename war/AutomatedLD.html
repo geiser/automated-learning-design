@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Automated Learning Design</title>
+    <script type="text/javascript" language="javascript" >
+        var injectorsHolder = new Object();
+        function executeInjections() {
+                for (var i in injectorsHolder) {
+                        injectorsHolder[i]();
+                }
+        }
+    </script>
+    <script type="text/javascript" language="javascript" src="automatedld/automatedld.nocache.js"></script>
+    <script type="text/javascript" language="javascript" src="resources/flash/swfobject.js"></script>
+    <link type="text/css" rel="stylesheet" href="AutomatedLD.css">
+    <link type="text/css" rel="stylesheet" href="resources/css/gxt-all.css" />
+  </head>
+  <body>
+    <!-- OPTIONAL: include this if you want history support -->
+        <!-- <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe> -->
+        
+    <h1>Automated Learning Design (HTN planner)</h1>
+    <br/>
+<!--<p>Projeto é a fase de planificação ou sequenciamento de atividades a serem efetuadas durante o processo de aprendizagem. O objetivo é construir um Sistema para automatizar o processo.</p>-->
+    <table align="center">
+      <tr>
+        <td id="plannerView">
+                <script type="text/javascript" language="javascript" >
+                        injectorsHolder['plannerView'] = function() { addPlannerView('plannerView', null); };
+                        </script>
+                    <noscript>
+                      <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+                        Your web browser must have JavaScript enabled
+                        in order for this application to display correctly.
+                      </div>
+                    </noscript>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,1607 @@
+(defdomain coursegeneration
+  ;; domain definition
+  (
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; basic general axioms and operators                             ;;
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   (:- (same ?x ?x)())
+   (:- (different ?x ?y)((not (same ?x ?y))))
+   
+   (:- (first ?head (?head . ?tail))())
+   (:- (first nil nil)())
+   
+   (:- (rest ?tail (?head . ?tail))())
+   (:- (rest nil nil)())
+   
+   (:- (assignIterator ?var (?head . ?tail))(assign ?var ?head))
+   (:- (assignIterator ?var (?head . ?tail))(assignIterator ?var ?tail))
+   
+   (:- (removeElement ?result ?element ?list)
+     (removeH ?result nil ?element ?list))
+   (:- (removeH ?result ?tempResult ?element nil)
+     (assign ?result (call Reverse ?tempResult)))
+   (:- (removeH ?result ?tempResult ?element (?element . ?tail))
+     (removeH ?result ?tempResult ?element ?tail))
+   (:- (removeH ?result ?tempResult ?element (?first . ?tail))
+     ((not (same ?first ?element))
+      (removeH ?result (?first . ?tempResult) ?element ?tail)))
+   
+   (:- (restrict ?result ?list1 ?list2)
+     (assign ?result (call Restrict ?list1 ?list2)))
+   
+   ;; axiom to access learner model
+   (:- (learnerProperty ?learner ?property ?value)
+     ((learner ?learner)
+      (property ?learner ?property ?value))
+     ((assign ?value (call LearnerProperty ?learner ?property))))
+   (:- (learnerProperty ?learner ?property ?resource ?value)
+     ((learner ?learner)
+      (property ?learner ?property ?resource ?value))
+     ((assign ?value (call LearnerProperty ?learner ?property ?resource))))
+   
+   ;; axiom to access domain model (learning service)
+   (:- (learningServiceAvailable ?serviceName)
+     (call LearningServiceAvailable ?serviceName))
+   
+   ;; axiom to access domain model (resources)
+   (:- (getResources ?result ?query)
+     ((assign ?result (call GetResources ?query))))
+   
+   ;; axiom to access domain model (competences)
+   (:- (getCompetences ?result ?query)
+     ((assign ?result (call GetCompetences ?query))))
+   
+   ;; axiom to access domain model (related)
+   (:- (getRelatedSet ?result ?set ?distance ?relation ?query)
+     ((assign ?result (call GetRelated ?set ?distance ?relation ?query))))
+
+   (:- (typicalLearningTime ?id ?time)
+     ((assign ?time (call GetMetadata hasTypicalLearningTime ?id))))
+   
+   ;; operators to add or remove atoms
+   (:operator (!!addInWorldState ?atom)
+     ()
+     ()
+     (?atom))
+   
+   (:operator (!!removeFromWorldState ?atom)
+     ()
+     (?atom)
+     ())
+   
+   ;; operator for start and end ld elements,
+   ;; when applying the parameter task?: dynamic task
+   ;; ?type = type of section e.g: introduction or training
+   ;; ?parameters = ids of fundamentals (concepts)
+   ;; ?task = metadata of section that containts information about context during the planning process (information used for re-planning a section)
+   ;; (for most pedagogical task t exists a task marked with suffix section that embeds t into a section)
+   ;; to embed [pedagogicatTask] into a section use the task ([pedagogicalTask]Section ?parameters ?type ?sectionParameters ?task)
+   ;; (:method ([pedagogicalTask]Section ?parameters ?type ?sectionParameters ?task)
+   ;;   ()
+   ;;   ((!startSection ?type ?sectionParameters ?task)
+   ;;    ([pedagogicalTask] ?parameters)
+   ;;    (!endSection)))
+   (:operator (!startLDElement ?type)()()())
+   (:operator (!startLDElement ?type ?parameters)()()())
+   (:operator (!startLDElement ?type ?parameters ?task)()()())
+   (:operator (!endLDElement ?type)()()())
+
+   (:operator (!insertLearningService ?serviceName ?methodName ?resource)()()())
+   (:operator (!insertLearningService ?serviceName ?methodName ?resource ?paramenters)()()())
+   (:operator (!text ?type ?paramenters)()()()) ;; --> ainda não usado ?
+   (:operator (!dynamicTask ?educationalObjective ?contentIds)()()()) ;; --> ainda não usado
+   
+   ;; add users to role
+   (:method (addUsersToRole nil ?role)()())
+   (:method (addUsersToRole (?user . ?users) ?role)
+     ()
+     ((addUserToRole ?user ?role)
+      (addUsersToRole ?users ?role)))
+   
+   (:method (addUserToRole ?user ?role)
+     ((not (role ?user ?role)))
+     ((!addUserToRole ?user ?role))
+     ;; fall-back
+     ()
+     ())
+   
+   (:operator (!addUserToRole ?user ?role)
+     ()
+     ()
+     ((role ?user ?role)))
+   
+   ;; remove users from role
+   (:method (removeUsersFromRole nil ?role)()())
+   (:method (removeUsersFromRole (?user . ?users) ?role)
+     ()
+     ((removeUserFromRole ?user ?role)
+      (removeUsersFromRole ?users ?role)))
+   
+   (:method (removeUserFromRole ?user ?role)
+     ((role ?user ?role))
+     ((!removeUserFromRole ?user ?role))
+     ;; fall-back
+     ()
+     ())
+   
+   (:operator (!removeUserFromRole ?user ?role)
+     ()
+     ((role ?user ?role))
+     ())
+   
+   ;; insert resource
+   (:method (insertResource ?r)
+     ((not (inserted ?r)))
+     ((!insertResource ?r))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (insertResource ?r ?l)
+     ((not (inserted ?r ?l)))
+     ((!insertResource ?r ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:operator (!insertResource ?r)
+     ()
+     ()
+     ((inserted ?r)))
+   
+   (:operator (!insertResource ?r ?l)
+     ()
+     ()
+     ((inserted ?r ?l)))
+   
+   ;; insert resource once
+   (:method (insertResourceOnce! ?r)
+     ((not (inserted ?r)))
+     ((!insertResource ?r)))
+   
+   (:method (insertResourceOnce! ?r ?l)
+     ((not (inserted ?r ?l)))
+     ((!insertResource ?r ?l)))
+   
+   ;; insert all resources
+   (:method (insertAllResources nil)()())
+   (:method (insertAllResources (?head . ?tail))
+     ()
+     ((insertResource ?head)
+      (insertAllResources ?tail)))
+   
+   (:method (insertAllResources nil ?l)()())
+   (:method (insertAllResources (?head . ?tail) ?l)
+     ()
+     ((insertResource ?head ?l)
+      (insertAllResources ?tail ?l)))
+   
+   ;; add inserted in world state
+   (:method (addInWorldStateAsInserted nil)()())
+   (:method (addInWorldStateAsInserted (?head . ?tail))
+     ()
+     ((!!addInWorldState (inserted ?head))
+      (addInWorldStateAsInserted ?tail)))
+   
+   (:method (addInWorldStateAsInserted nil ?l)()())
+   (:method (addInWorldStateAsInserted (?head . ?tail) ?l)
+     ()
+     ((!!addInWorldState (inserted ?head ?l))
+      (addInWorldStateAsInserted ?tail ?l)))
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; basic general axioms and operators to manager resources        ;;
+   ;; (delivery strategy)                                            ;;
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; query all element is inserted
+   (:- (allInserted  nil)())
+   (:- (allInserted (?head . ?tail))
+     ((inserted ?head)(allInserted ?tail)))
+   
+   (:- (allInserted  nil ?l)())
+   (:- (allInserted (?head . ?tail) ?l)
+     ((inserted ?head ?l)(allInserted ?tail ?l)))
+   
+   ;; select those resources from a list that where not inserted
+   (:- (getNonInserted ?result ?resources)
+     (getNIH ?result (call Reverse ?resources) nil))
+   (:- (getNIH ?result ?resources ?temp)
+     ((same ?resources nil)
+      (assign ?result ?temp))
+     
+     ((first ?el ?resources)
+      (inserted ?el)
+      (rest ?tail ?resources)
+      (getNIH ?result ?tail ?temp))
+     
+     ((first ?el ?resources)
+      (rest ?tail ?resources)
+      (getNIH ?result ?tail (?el . ?temp))))
+   
+   (:- (getNonInserted ?result ?resources ?l)
+     (getNIH ?result (call Reverse ?resources) nil ?l))
+   (:- (getNIH ?result ?resources ?temp ?l)
+     ((same ?resources nil)
+      (assign ?result ?temp))
+     
+     ((first ?el ?resources)
+      (inserted ?el ?l)
+      (rest ?tail ?resources)
+      (getNIH ?result ?tail ?temp))
+     
+     ((first ?el ?resources)
+      (not (inserted ?el ?l))
+      (rest ?tail ?resources)
+      (getNIH ?result ?tail (?el . ?temp) ?l)))
+   
+   ;; resource ?r is ready to insert
+   (:- (readyAux ?r ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?result ((class Competence)
+                               ;(property hasLearningContext ?el)
+                               (relation inverseHasPrerequisite ?r)))
+      (allHaveCompetences ?result ?l)
+      (getResources ?resources ((class Auxiliary)
+                                (property hasLearningContext ?el)
+                                (relation isRequiredBy ?r)))
+      (allInserted ?resources ?l)))
+   
+   (:- (allHaveCompetences nil ?l)())
+   (:- (allHaveCompetences (?head . ?tail) ?l)
+     ((hasCompetence ?head ?l)
+      (allHaveCompetences ?tail ?l)))
+   
+   (:- (hasCompetence ?comp ?l)
+     ((assign ?il (call GetMetadata level ?comp))
+      (learnerProperty ?l hasCompetenceLevel ?comp ?cl)
+      (call >= ?cl ?il)))
+   
+   ;; sort by already seen
+   (:- (sortByAlreadySeen ?result ?list ?l)
+     ((sortByAlreadySeenH ?result ?list nil nil ?l)))
+   (:- (sortByAlreadySeenH ?result ?list ?notSeen ?seen ?l)
+     ((same ?list nil)
+      (assign ?result (call Concat ?notSeen ?seen)))
+     
+     ((first ?current ?list)
+      (learnerProperty ?l hasAlreadySeen ?current ?value)
+      (same ?value false)
+      (rest ?tail ?list)
+      (sortByAlreadySeenH ?result ?tail (?current . ?notSeen) ?seen ?l))
+     
+     ((first ?current ?list)
+      (learnerProperty ?l hasAlreadySeen ?current ?value)
+      (same ?value true)
+      (rest ?tail ?list)
+      (sortByAlreadySeenH ?result ?tail ?notSeen (?current . ?seen) ?l)))
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   ;; insert resource if ready
+   (:method (insertWithVariantsIfReady! ?r ?l)
+     ((not (inserted ?r ?l))
+      (readyAux ?r ?l)
+      (learnerProperty ?l hasEducationalLevel ?el)
+      (assign ?variants
+              (call GetRelated (?r) -1 isVariantOf)))
+     ((!insertResource ?r ?l)
+      (addInWorldStateAsInserted ?variants ?l)))
+   
+   ;; insert all aux if ready
+   (:method (insertAllAuxOnceIfReady nil ?l)()())
+   (:method (insertAllAuxOnceIfReady (?head . ?tail) ?l)
+     ()
+     ((inserAuxOnceIfReady ?head ?l)
+      (insertAllAuxOnceIfReady ?tail ?l)))
+   
+   (:method (insertAuxOnceIfReady ?r ?l)
+     ()
+     ((insertAuxOnceIfReady! ?r ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (insertAuxOnceIfReady! ?r ?l)
+     ((not (inserted ?r ?l))
+      (readyAux ?r ?l))
+     ((!insertResource ?r ?l)))
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; basic general axioms and operators to create a illustrate section    ;;
+   ;; (developmental - management strategy)                                ;;
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   ;; section to illustrate fundamental ?f
+   (:method (illustrateSection ?f)
+     ((forall (?l) ((learner ?l))
+              (illustrateSection ?f ?l)))
+     ()
+     
+     ((learner ?l)
+      (not (illustrateSection ?f ?l)))
+     ((illustrateSection! ?f ?l)
+      (!!addInWorldState (illustrateSection ?f ?l))  ;; review -> (gcc)
+      (illustrateSection ?f)))
+   
+   (:method (illustrateSection! ?f ?l)
+     ((assign ?newRole (call GetNewRole (?l))))
+     ((!addUserToRole ?l ?newRole)
+      (!startLDElement role-part ((title (call ConcatText section-to-illustrate
+                                               (call GetMetadata title ?f)))
+                                  (role-ref ?newRole)))
+      (illustrate! ?f ?l)
+      (!endLDElement role-part)))
+   
+   ;; illustrate fundamental ?f
+   (:method (illustrate ?f ?l)
+     ()
+     ((illustrate! ?f ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (illustrate! ?f ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (learnerProperty ?l hasEducationalLevel ?ael)
+      (assignIterator ?el (?ael . ?aels))
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences isRequiredBy)))
+     ((!startLDElement activity-structure ((title (call ConcatText illustrate-fundamental
+                                                        (call GetMetadata title ?f) with-examples)))
+                       (illustrate! (?f ?l)))
+      (illustrateCompetencesWithSingleExample veryEasy ?competences ?l)
+      (illustrateCompetencesWithSingleExample easy ?competences ?l)
+      (illustrateCompetencesWithSingleExample medium ?competences ?l)
+      (illustrateCompetencesWithSingleExample difficult ?competences ?l)
+      (illustrateCompetencesWithSingleExample veryDifficult ?competences ?l)
+      (illustrateWithSingleExampleRelaxed ?f ?l)
+      (!endLDElement activity-structure)))
+   
+   (:method (illustrateCompetencesWithSingleExample ?difficulty nil ?l)()())
+   (:method (illustrateCompetencesWithSingleExample ?difficulty (?competence . ?competences) ?l)
+     ()
+     ((illustrateCompetenceWithSingleExample ?difficulty ?competence ?l)
+      (illustrateCompetencesWithSingleExample ?difficulty ?competences ?l)))
+   
+   
+   ;; illustrate competence with differents levels of difficulty
+   (:method (illustrateCompetence ?competence ?l)
+     ()
+     ((illustrateCompetence! ?competence ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (illustrateCompetence! ?competence ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (learnerProperty ?l hasEducationalLevel ?ael)
+      (assignIterator ?el (?ael . ?aels))
+      (getResources ?resources ((class Example)
+                                (property hasLearningContext ?el)
+                                (relation hasEducationalObjective ?competence)))
+      (not (same ?resources nil)))
+     ((!startLDElement activity-structure ((title (call ConcatText illustrate
+                                                        (call GetMetadata title ?competence) with-examples)))
+                       (illustrateCompetence! (?competence ?l)))
+      (illustrateCompetenceWithSingleExample veryEasy ?competence ?l)
+      (illustrateCompetenceWithSingleExample veryEasy ?competence ?l)
+      (illustrateCompetenceWithSingleExample easy ?competence ?l)
+      (illustrateCompetenceWithSingleExample easy ?competence ?l)
+      (illustrateCompetenceWithSingleExample medium ?competence ?l)
+      (illustrateCompetenceWithSingleExample medium ?competence ?l)
+      (illustrateCompetenceWithSingleExample difficult ?competence ?l)
+      (illustrateCompetenceWithSingleExample difficult ?competence ?l)
+      (illustrateCompetenceWithSingleExample veryDifficult ?competence ?l)
+      (illustrateCompetenceWithSingleExample veryDifficult ?competence ?l)
+      (illustrateCompetenceWithSingleExampleRelaxed ?competence ?l)
+      (!endLDElement activity-structure)))
+   
+   ;; illustrate competence with single example that taking difficulty and competence into account
+   (:method (illustrateCompetenceWithSingleExample ?difficulty ?competence ?l)
+     ()
+     ((illustrateCompetenceWithSingleExample! ?difficulty ?competence ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (illustrateCompetenceWithSingleExample! ?difficulty ?competence ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getResources ?unsortedExamples ((class Example)
+                                       (property hasLearningContext ?el)
+                                       (property hasDifficulty ?difficulty)
+                                       (relation hasEducationalObjective ?competence)))
+      (sortByAlreadySeen ?examples ?unsortedExamples ?l)
+      (assignIterator ?example ?examples))
+     ((!startLDElement learning-activity ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?competence) with-single-example)))
+                       (illustrateCompetenceWithSingleExample! (?difficulty ?competence ?l)))
+      (!startLDElement activity-description ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?competence) with-single-example))))
+      (insertWithVariantsIfReady! ?example ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (illustrateCompetenceWithSingleExample! ?difficulty ?competence ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (assignIterator ?el ?aels)
+      (getResources ?unsortedExamples ((class Example)
+                                       (property hasLearningContext ?el)
+                                       (property hasDifficulty ?difficulty)
+                                       (relation hasEducationalObjective ?competence)))
+      (sortByAlreadySeen ?examples ?unsortedExamples ?l)
+      (assignIterator ?example ?examples))
+     ((!startLDElement learning-activity ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?competence) with-single-example)))
+                       (illustrateCompetenceWithSingleExample! (?difficulty ?competence ?l)))
+      (!startLDElement activity-description ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?competence) with-single-example))))
+      (insertWithVariantsIfReady! ?example ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;; illustrate competence with single relaxed example
+   (:method (illustrateCompetenceWithSingleExampleRelaxed ?competence ?l)
+     ()
+     ((illustrateCompetenceWithSingleExampleRelaxed! ?competence ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (illustrateCompetenceWithSingleExampleRelaxed! ?competence ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (learnerProperty ?l hasEducationalLevel ?ael)
+      (assignIterator ?el (?ael . ?aels))
+      (getResources ?unsortedExamples ((class Example)
+                                       (property hasLearningContext ?el)
+                                       (relation hasEducationalObjective ?competence)))
+      (sortByAlreadySeen ?examples ?unsortedExamples ?l)
+      (assignIterator ?example ?examples))
+     ((!startLDElement learning-activity ((title (call ConcatText illustrate-competence
+                                                       (call GetMetadata title ?competence)
+                                                       with-single-relaxed-example)))
+                       (illustrateWithSingleExample! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText illustrate-competence
+                                                          (call GetMetadata title ?competence)
+                                                          with-single-relaxed-example))))
+      (insertResourceOnce! ?example ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;; illustrate fundamental ?f with single example
+   (:method (illustrateWithSingleExample! ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?unsortedExamples ((class Example)
+                                       (property hasLearningContext ?el)
+                                       (relation hasEducationalObjective ?c)))
+      (sortByAlreadySeen ?examples ?unsortedExamples ?l)
+      (assignIterator ?example ?examples))
+     ((!startLDElement learning-activity ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f) with-single-example)))
+                       (illustrateWithSingleExample! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f) with-single-example))))
+      (insertWithVariantsIfReady! ?example ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (illustrateWithSingleExample! ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getResources ?unsortedExamples ((class Example)
+                                       (property hasLearningContext ?el)))
+      (sortByAlreadySeen ?examples ?unsortedExamples ?l)
+      (assignIterator ?example ?examples))
+     ((!startLDElement learning-activity ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f) with-single-example)))
+                       (illustrateWithSingleExample! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f) with-single-example))))
+      (insertWithVariantsIfReady! ?example ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (illustrateWithSingleExample! ?f ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (assignIterator ?el ?aels)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?unsortedExamples ((class Example)
+                                       (property hasLearningContext ?el)
+                                       (relation hasEducationalObjective ?c)))
+      (sortByAlreadySeen ?examples ?unsortedExamples ?l)
+      (assignIterator ?example ?examples))
+     ((!startLDElement learning-activity ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f) with-single-example)))
+                       (illustrateWithSingleExample! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f) with-single-example))))
+      (insertWithVariantsIfReady! ?example ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (illustrateWithSingleExample! ?f ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (assignIterator ?el ?aels)
+      (getResources ?unsortedExamples ((class Example)
+                                       (property hasLearningContext ?el)))
+      (sortByAlreadySeen ?examples ?unsortedExamples ?l)
+      (assignIterator ?example ?examples))
+     ((!startLDElement learning-activity ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f) with-single-example)))
+                       (illustrateWithSingleExample! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f) with-single-example))))
+      (insertWithVariantsIfReady! ?example ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;; illustrate fundamental ?f with single relaxed example
+   (:method (illustrateWithSingleExampleRelaxed ?f ?l)
+     ()
+     ((illustrateWithSingleExampleRelaxed! ?f ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (illustrateWithSingleExampleRelaxed! ?f ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (learnerProperty ?l hasEducationalLevel ?ael)
+      (assignIterator ?el (?ael . ?aels))
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?unsortedExamples ((class Example)
+                                       (property hasLearningContext ?el)
+                                       (relation hasEducationalObjective ?c)))
+      (sortByAlreadySeen ?examples ?unsortedExamples ?l)
+      (assignIterator ?example ?examples))
+     ((!startLDElement learning-activity ((title (call ConcatText illustrate
+                                                       (call GetMetadata title ?f)
+                                                       with-single-relaxed-example)))
+                       (illustrateWithSingleExample! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText illustrate
+                                                          (call GetMetadata title ?f)
+                                                          with-single-relaxed-example))))
+      (insertResourceOnce! ?example ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; basic general axioms and operators to create a section to train      ;;
+   ;; (developmental - management strategy)                                ;;
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   ;; train fundamental ?f
+   (:method (train ?f ?l)
+     ()
+     ((train! ?f ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (train! ?f ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (learnerProperty ?l hasEducationalLevel ?ael)
+      (assignIterator ?el (?ael . ?aels))
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences isRequiredBy)))
+     ((!startLDElement activity-structure ((title (call ConcatText train-fundamental
+                                                        (call GetMetadata title ?f) with-exercises)))
+                       (train! (?f ?l)))
+      (trainCompetencesWithSingleExercise veryEasy ?competences ?l)
+      (trainCompetencesWithSingleExercise easy ?competences ?l)
+      (trainCompetencesWithSingleExercise medium ?competences ?l)
+      (trainCompetencesWithSingleExercise difficult ?competences ?l)
+      (trainCompetencesWithSingleExercise veryDifficult ?competences ?l)
+      (trainWithSingleExerciseRelaxed ?f ?l)
+      (!endLDElement activity-structure)))
+   
+   (:method (trainCompetencesWithSingleExercise ?difficulty nil ?l)()())
+   (:method (trainCompetencesWithSingleExercise ?difficulty (?competence . ?competences) ?l)
+     ()
+     ((trainCompetenceWithSingleExercise ?difficulty ?competence ?l)
+      (trainCompetencesWithSingleExercise ?difficulty ?competences ?l)))
+   
+   
+   ;; train competence with differents levels of difficulty
+   (:method (trainCompetence ?competence ?l)
+     ()
+     ((trainCompetence! ?competence ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (trainCompetence! ?competence ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (learnerProperty ?l hasEducationalLevel ?ael)
+      (assignIterator ?el (?ael . ?aels))
+      (getResources ?resources ((class Exercise)
+                                (property hasLearningContext ?el)
+                                (relation hasEducationalObjective ?competence)))
+      (not (same ?resources nil)))
+     ((!startLDElement activity-structure ((title (call ConcatText train
+                                                        (call GetMetadata title ?competence) with-single-exercise)))
+                       (trainCompetence! (?competence ?l)))
+      (trainCompetenceWithSingleExercise veryEasy ?competence ?l)
+      (trainCompetenceWithSingleExercise veryEasy ?competence ?l)
+      (trainCompetenceWithSingleExercise easy ?competence ?l)
+      (trainCompetenceWithSingleExercise easy ?competence ?l)
+      (trainCompetenceWithSingleExercise medium ?competence ?l)
+      (trainCompetenceWithSingleExercise medium ?competence ?l)
+      (trainCompetenceWithSingleExercise difficult ?competence ?l)
+      (trainCompetenceWithSingleExercise difficult ?competence ?l)
+      (trainCompetenceWithSingleExercise veryDifficult ?competence ?l)
+      (trainCompetenceWithSingleExercise veryDifficult ?competence ?l)
+      (trainCompetenceWithSingleExerciseRelaxed ?competence ?l)
+      (!endLDElement activity-structure)))
+   
+   ;; train competence with single exercise that taking difficulty and competence into account
+   (:method (trainCompetenceWithSingleExercise ?difficulty ?competence ?l)
+     ()
+     ((trainCompetenceWithSingleExercise! ?difficulty ?competence ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (trainCompetenceWithSingleExercise! ?difficulty ?competence ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getResources ?unsortedExercises ((class Exercise)
+                                       (property hasLearningContext ?el)
+                                       (property hasDifficulty ?difficulty)
+                                       (relation hasEducationalObjective ?competence)))
+      (sortByAlreadySeen ?exercises ?unsortedExercises ?l)
+      (assignIterator ?exercise ?exercises))
+     ((!startLDElement learning-activity ((title (call ConcatText train
+                                                       (call GetMetadata title ?competence) with-single-exercise)))
+                       (trainCompetenceWithSingleExercise! (?difficulty ?competence ?l)))
+      (!startLDElement activity-description ((title (call ConcatText train
+                                                       (call GetMetadata title ?competence) with-single-exercise))))
+      (insertWithVariantsIfReady! ?exercise ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (trainCompetenceWithSingleExercise! ?difficulty ?competence ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (assignIterator ?el ?aels)
+      (getResources ?unsortedExercises ((class Exercise)
+                                        (property hasLearningContext ?el)
+                                        (property hasDifficulty ?difficulty)
+                                        (relation hasEducationalObjective ?competence)))
+      (sortByAlreadySeen ?exercises ?unsortedExercises ?l)
+      (assignIterator ?exercise ?exercises))
+     ((!startLDElement learning-activity ((title (call ConcatText train
+                                                       (call GetMetadata title ?competence) with-single-exercise)))
+                       (trainCompetenceWithSingleExercise! (?difficulty ?competence ?l)))
+      (!startLDElement activity-description ((title (call ConcatText train
+                                                       (call GetMetadata title ?competence) with-single-exercise))))
+      (insertWithVariantsIfReady! ?exercise ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;; train competence with single relaxed exercise
+   (:method (trainCompetenceWithSingleExerciseRelaxed ?competence ?l)
+     ()
+     ((trainCompetenceWithSingleExerciseRelaxed! ?competence ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (trainCompetenceWithSingleExerciseRelaxed! ?competence ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (learnerProperty ?l hasEducationalLevel ?ael)
+      (assignIterator ?el (?ael . ?aels))
+      (getResources ?unsortedExercises ((class Exercise)
+                                        (property hasLearningContext ?el)
+                                        (relation hasEducationalObjective ?competence)))
+      (sortByAlreadySeen ?exercises ?unsortedExercises ?l)
+      (assignIterator ?exercise ?exercises))
+     ((!startLDElement learning-activity ((title (call ConcatText train-competence
+                                                       (call GetMetadata title ?competence)
+                                                       with-single-relaxed-exercise)))
+                       (trainWithSingleExercise! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText train-competence
+                                                          (call GetMetadata title ?competence)
+                                                          with-single-relaxed-exercise))))
+      (insertResourceOnce! ?exercise ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;; train fundamental ?f with single exercise
+   (:method (trainWithSingleExercise ?f ?l)
+     ()
+     ((trainWithSingleExercise! ?f ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (trainWithSingleExercise! ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?unsortedExercises ((class Exercise)
+                                        (property hasLearningContext ?el)
+                                        (relation hasEducationalObjective ?c)))
+      (sortByAlreadySeen ?exercises ?unsortedExercises ?l)
+      (assignIterator ?exercise ?exercises))
+     ((!startLDElement learning-activity ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-exercise)))
+                       (trainWithSingleExercise! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-exercise))))
+      (insertWithVariantsIfReady! ?exercise ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (trainWithSingleExercise! ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getResources ?unsortedExercises ((class Exercise)
+                                       (property hasLearningContext ?el)))
+      (sortByAlreadySeen ?exercises ?unsortedExercises ?l)
+      (assignIterator ?exercise ?exercises))
+     ((!startLDElement learning-activity ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-exercise)))
+                       (trainWithSingleExercise! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-exercise))))
+      (insertWithVariantsIfReady! ?exercise ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (trainWithSingleExercise! ?f ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (assignIterator ?el ?aels)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?unsortedExercises ((class Exercise)
+                                        (property hasLearningContext ?el)
+                                        (relation hasEducationalObjective ?c)))
+      (sortByAlreadySeen ?exercises ?unsortedExercises ?l)
+      (assignIterator ?exercise ?exercises))
+     ((!startLDElement learning-activity ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-exercise)))
+                       (trainteWithSingleExercise! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-exercise))))
+      (insertWithVariantsIfReady! ?exercise ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (trainWithSingleExercise! ?f ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (assignIterator ?el ?aels)
+      (getResources ?unsortedExercises ((class Exercise)
+                                        (property hasLearningContext ?el)))
+      (sortByAlreadySeen ?exercises ?unsortedExercise ?l)
+      (assignIterator ?exercise ?exercises))
+     ((!startLDElement learning-activity ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-exercise)))
+                       (trainWithSingleExercise! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-exercise))))
+      (insertWithVariantsIfReady! ?exercise ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;; train fundamental ?f with single relaxed exercise
+   (:method (trainWithSingleExerciseRelaxed ?f ?l)
+     ()
+     ((trainWithSingleExerciseRelaxed! ?f ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (trainWithSingleExerciseRelaxed! ?f ?l)
+     ((learnerProperty ?l hasAllowedEducationalLevel ?aels)
+      (learnerProperty ?l hasEducationalLevel ?ael)
+      (assignIterator ?el (?ael . ?aels))
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?unsortedExercises ((class Exercise)
+                                        (property hasLearningContext ?el)
+                                        (relation hasEducationalObjective ?c)))
+      (sortByAlreadySeen ?exercises ?unsortedExercises ?l)
+      (assignIterator ?exercise ?exercises))
+     ((!startLDElement learning-activity ((title (call ConcatText train
+                                                       (call GetMetadata title ?f) with-single-relaxed-exercise)))
+                       (trainWithSingleExerciseRelaxed! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText train
+                                                          (call GetMetadata title ?f) with-single-relaxed-exercise))))
+      (insertResourceOnce! ?exercise ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; basic general axioms and operators to manager the scenarios    ;;
+   ;; (developmental - management strategy)                          ;;
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   ;; known fundamental? fundamental is atomic knowledge element
+   (:- (known ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?competences ((class Competence)
+                                    ;(property hasLearningContext ?el)
+                                    (relation isFor ?f)))
+      (allHaveCompetences ?competences ?l)))
+   
+   ;; remove known fundamentals
+   (:- (removeKnownFundamentals ?result (?head . ?tail) ?l)
+     ((removeKnownFundamentalsH ?result nil ?head ?tail ?l)))
+   (:- (removeKnownFundamentalsH ?result ?temp ?f ?tail ?l)
+     ((same ?c nil)
+      (assign ?result ?temp))
+     
+     ((or (inserted ?f)    ;; -> review (gcc)
+          (inserted ?f ?l) ;; -> review (gcc)
+          (known ?f ?l))
+      (first ?next ?tail)
+      (rest ?newRest ?tail)
+      (removeKnownFundamentalsH ?result ?temp ?next ?newRest ?l))
+     
+     ((first ?next ?tail)
+      (rest ?newRest ?tail)
+      (removeKnownFundamentalsH ?result (?f . ?temp) ?next ?newRest ?l)))
+   
+   ;; collect unknown knowledge prerequisites
+    (:- (collectUnknownPrereq ?f ?result ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getRelatedSet ?set (?f) -1
+                     isRequiredBy ((class Fundamental)
+                                   (property hasLearningContext ?el)))
+      (not (same ?resources nil))
+      (assign ?sorted (call Sort ?set isRequiredBy))
+      (removeKnownFundamentals ?reversedUnknown ?sorted ?l)
+      (assign ?result (call Reverse ?reversedUnknown))))
+   
+   ;; review this collect
+   (:- (collectAbstractness ?result ?list)
+     ((collectAbstractnessH ?reversedAbstractness nil ?list)
+      (assign ?result (call Reverse ?reversedAbstractness))))
+   
+   (:- (collectAbstractnessH ?result ?temp ?list)
+     ((same ?list nil)
+      (assign ?result ?temp))
+     
+     ((first ?head ?list)
+      (rest ?tail ?list)
+      (collectAbstractnessH ?result ((call GetMetadata abstractness ?head) . ?temp) ?tail)))
+   
+   ;; obtain non targetFundamentals ? review -> show connections -> (gcc) 
+   (:- (getNonTargetFundamentals ?result ?elements)
+     (getNTFH ?result (call Reverse ?elements) nil))
+   (:- (getNTFH ?result ?elements ?temp)
+     ((same ?element nil)
+      (assign ?result ?temp))
+     
+     ((first ?el ?elements)
+      (targetFundamental ?el)
+      (rest ?tail ?elements)
+      (getNTFH ?result ?tail ?temp))
+     
+     ((first ?el ?elements)
+      (rest ?tail ?elements)
+      (getNTFH ?result ?tail (?el . ?temp))))
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+   ;; initial method to generate course to attain a set of competences
+   ;; ?competences = fundamental competences of this course
+   ;; ?scenario  = ?pedObjective 
+   (:method (generatecourse)
+     ((goalTask (?scenario ?fundamentals)))
+     ((!!addInWorldState (scenario ?fundamentals))
+      (insertTargetFundamentals ?fundamentals)
+      (insertAndPlanGoal ?scenario ?fundamentals)))
+   
+   (:method (insertTargetFundamentals nil)()())
+   (:method (insertTargetFundamentals (?head . ?tail))
+     ()
+     ((!!addInWorldState (targetFundamental ?head))
+      (insertTargetFundamentals ?tail)))
+   
+   ;; starts the course generation
+   (:method (insertAndPlanGoal ?scenario ?fundamentals)
+     ((same ?scenario discover))
+     ((discover ?fundamentals))
+     
+     ;((same ?pedObjective guidedTour))
+     ;((guidedTour ?fundamentals))
+     
+     ;; other scenario need to be modeled 
+     
+     ;((same ?pedObjective trainCompetenceThink))
+     ;((!!changeScenario trainCompetence)
+     ; (trainCompetence think ?fundamentals))
+     
+     ;((same ?pedObjective examSimulation30))
+     ;((!!changeScenario examSimulation30)
+     ; (examSimulation 30 ?fundamentals))
+   )
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; basic general axioms and operators to manager discover scenarios    ;;
+   ;; (presentation - discover strategy)                                  ;;
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   ;; scenario = discover
+   (:method (discover ?fundamentals)
+     ()
+     ((!startLDElement ld ((title IMS_Discover)
+                           (uri www_ime_usp_br_cg_courseware_discover)
+                           (level C))
+                       (discover ?fundamentals))
+      ;(descriptionScenarioSection ?concepts)
+      (learnFundamentalsDiscover ?fundamentals)
+      ;(reflect ?concepts)
+      (!endLDElement ld)))
+   
+   (:method (learnFundamentalsDiscover nil)()())
+   (:method (learnFundamentalsDiscover (?fundamental . ?fundamentals))
+     
+     ()
+     ((learnFundamentalDiscover ?fundamental)
+      (learnFundamentalsDiscover ?fundamentals)))
+   
+   ;; learn fundamental ?f with discover scenario
+   (:method (learnFundamentalDiscover ?f)
+     ()
+     ((!startLDElement play ((title (call ConcatText learn-fundamental
+                                          (call GetMetadata title ?f)
+                                          in-discover-scenario)))
+                       (learnFundamentalDiscover (?f)))
+      (introduceWithPrereqSection ?f)
+      (developFundamentalSection ?f)
+      ;(proveFundamentalSection ?f)****
+      (practiceFundamentalSection ?f)
+      ;(showConnectionsFundamentalSection ?f)****
+      (!endLDElement play)))
+   
+   ;; introduce with prerequisite section
+   (:method (introduceWithPrereqSection ?f)
+     ()
+     ((introduceWithPrereqSection! ?f))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (introduceWithPrereqSection! ?f)
+     ()
+     ((!startLDElement act ((title (call ConcatText section-to-introduce
+                                         (call GetMetadata title ?f)
+                                         with-prerequisite)))
+                       (introduceWithPrereqSection! (?f)))
+      (introduceWithSection ?f)
+      (learnPrerequisiteFundamentalsShortSection ?f)
+      (!endLDElement act)))
+   
+   ;; learn prerequisite fundamentas with short section
+   (:method (learnPrerequisiteFundamentalsShortSection ?f)
+     ((forall (?l) ((learner ?l))
+              (learnPrerequisiteFundamentalsShortSection ?f ?l)))
+     ()
+     
+     ((learner ?l)
+      (not (learnPrerequisiteFundamentalsShortSection ?f ?l)))
+     ((learnPrerequisiteFundamentalsShortSection! ?f ?l)
+      (!!addInWorldState (learnPrerequisiteFundamentalsShortSection ?f ?l))
+      (learnPrerequisiteFundamentalsShortSection ?f)))
+   
+   (:method (learnPrerequisiteFundamentalsShortSection! ?f ?l)
+     ((assign ?newRole (call GetNewRole (?l))))
+     ((!startLDElement role-part ((title learn-prerequisites-section)
+                                  (role-ref ?newRole))
+                       (learnPrerequisiteFundamentalsShortSection! (?f ?l)))
+      (!startLDElement activity-structure ((title (call ConcatText prerequisite-of
+                                                        (call GetMetadata title ?f))))
+                       (learnPrerequisiteFundamentalsShortSection! (?f ?l)))
+      (learnPrerequisiteFundamentalsShort ?f ?l)
+      (!endLDElement activity-structure)
+      (!endLDElement role-part)))
+   
+   (:method (learnPrerequisiteFundamentalsShort ?f ?l)
+     ()
+     ((learnPrerequisiteFundamentalsShort! ?f ?l))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (learnPrerequisiteFundamentalsShort! ?f ?l)
+     ((collectUnknownPrereq ?f ?pre ?l)
+      (not (same ?pre nil))
+      (collectAbstractness ?result ?pre))
+     ((!startLDElement learning-activity ((title (call ConcatText learn-prerequisites-of
+                                                       (call GetMetadata title ?f) with-resumes)))
+                       (learnPrerequisiteFundamentalsShort! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText prerequisites-of
+                                                          (call GetMetadata title ?f)))))
+      (!insertResource (call GetMetadata abstractness ?f) ?l) ;; -> review (gcc)
+      (!endLDElement activity-description)
+      (!startLDElement learning-object ((isvisible true)
+                                        (type knowledge-object)
+                                        (title learn-prerequisites)))
+      (insertAllResources ?result ?l)
+      (!endLDElement learning-object)
+      (!endLDElement learning-activity)))
+   
+   
+   ;; introduce fundamental with section
+   (:method (introduceWithSection ?f)
+     ((forall (?l) ((learner ?l))
+              (introduceWithSection ?f ?l)))
+     ()
+     
+     ((learner ?l)
+      (not (introduceWithSection ?f ?l)))
+     ((introduceWithSection! ?f ?l)
+      (!!addInWorldState (introduceWithSection ?f ?l))
+      (introduceWithSection ?f)))
+   
+   (:method (introduceWithSection! ?f ?l)
+     ((assign ?newRole (call GetNewRole (?l))))
+     ((!addUserToRole ?l ?newRole)
+      (!startLDElement role-part ((title (call ConcatText section-to-introduce
+                                               (call GetMetadata title ?f)))
+                                  (role-ref ?newRole)))
+      (!startLDElement activity-structure ((title (call ConcatText introduction
+                                                        (call GetMetadata title ?f))))
+                       (introduceWithSection! (?f ?l)))
+      (motivate! ?f ?l)
+      (problem! ?f ?l)
+      (insertIntroductionExample ?f ?l)
+      (!endLDElement activity-structure)
+      (!endLDElement role-part)))
+   
+   ;; motivate
+   (:method (motivate! ?f ?l)
+     ((learnerProperty ?l hasAnxiety ?f ?anxiety)
+      (same ?anxiety false)
+      (learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?resources ((class Exercise)
+                                (class Introduction)
+                                (property hasLearningContext ?el)
+                                (property hasDifficulty veryEasy)
+                                (relation hasEducationalObjective ?c)))
+      (assignIterator ?r ?resources))
+     ((!startLDElement learning-activity ((title (call ConcatText motivate
+                                                       (call GetMetadata title ?f))))
+                       (motivate! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText activity-to-motivate
+                                                          (call GetMetadata title ?f)))))
+      (insertAuxOnceIfReady! ?r ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (motivate! ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?resources ((class Introduction)
+                                (property hasLearningContext ?el)
+                                (relation hasEducationalObjective ?c)))
+      (assignIterator ?r ?resources))
+     ((!startLDElement learning-activity ((title (call ConcatText motivate
+                                                       (call GetMetadata title ?f))))
+                       (motivate! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText activity-to-motivate
+                                                          (call GetMetadata title ?f)))))
+      (insertAuxOnceIfReady! ?r ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   (:method (motivate! ?f ?l)
+     ()
+     ((!startLDElement learning-activity ((title (call ConcatText motivate
+                                                       (call GetMetadata title ?f))))
+                       (motivate! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText activity-to-motivate
+                                                          (call GetMetadata title ?f)))))
+      (insertIntroductionExample! ?f ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;; insert introduction example
+   (:method (insertIntroductionExample ?f ?l)
+     ()
+     ((!startLDElement learning-activity ((title (call ConcatText introduction-with-example
+                                                       (call GetMetadata title ?f)))))
+      (!startLDElement activity-description ((title (call ConcatText introduction-with-example
+                                                          (call GetMetadata title ?f)))))
+      (insertIntroductionExample! ?f ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (insertIntroductionExample! ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (assignIterator ?diff (veryEasy easy medium))
+      (getResources ?resources ((class Example)
+                                (class Introduction)
+                                (property hasLearningContext ?el)
+                                (property hasDifficulty ?diff)
+                                (relation hasEducationalObjective ?c)))
+      (assignIterator ?r ?resources))
+     ((insertAuxOnceIfReady! ?r ?l)))
+   
+   ;; problem
+   (:method (problem! ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?resources ((class RealWorldProblem)
+                                (property hasLearningContext ?el)
+                                (relation hasEducationalObjective ?c)))
+      (assignIterator ?r ?resources))
+     ((!startLDElement learning-activity ((title (call ConcatText problem-to-learn
+                                                       (call GetMetadata title ?f))))
+                       (problem! (?f ?l)))
+      (!startLDElement activity-description ((title (call ConcatText solve-problem
+                                                          (call GetMetadata title ?f)))))
+      (insertResourceOnce! ?r ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   
+   ;; section to develop fundamental
+   (:method (developFundamentalSection ?f)
+     ()
+     ((developFundamentalSection! ?f))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (developFundamentalSection! ?f)
+     ()
+     ((!startLDElement act ((title (call ConcatText section-to-develop-fundamental
+                                         (call GetMetadata title ?f))))
+                       (developFundamentalSection! (?f)))
+      (developSection! ?f)
+      (explainSection ?f)
+      (!endLDElement act)))
+   
+   ;; section to develop fundametal ?f
+   (:method (developSection ?f)
+     ()
+     ((developSection! ?f))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (developSection! ?f)
+     ((learners ?learners) ;; review -> (gcc)
+      (assign ?newRole (call GetNewRole ?learners)))
+     ((addUsersToRole ?learners ?newRole)
+      (!startLDElement role-part ((title (call ConcatText section-to-develop
+                                               (call GetMetadata title ?f)))
+                                  (role-ref ?newRole)) (developSection! (?f)))
+      (!startLDElement learning-activity ((title (call ConcatText activity-to-develop
+                                                       (call GetMetadata title ?f)))))
+      (!startLDElement activity-description ((title (call ConcatText activity-to-develop
+                                                          (call GetMetadata title ?f)))))
+      (!insertResource (call GetMetadata abstractness ?f))
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)
+      (!endLDElement role-part)))
+   
+   ;; section to explain fundamental ?f
+   (:method (explainSection ?f)
+     ((forall (?l) ((learner ?l))
+              (explainSection ?f ?l)))
+     ()
+     
+     ((learner ?l)
+      (not (explainSection ?f ?l)))
+     ((explainSection! ?f ?l)
+      (!!addInWorldState (explainSection ?f ?l))  ;; review -> (gcc)
+      (explainSection ?f)))
+   
+   (:method (explainSection! ?f ?l)
+     ((known ?f ?l)
+      (assign ?newRole (call GetNewRole (?l))))
+     ((!addUserToRole ?l ?newRole)
+      (!startLDElement role-part ((title (call ConcatText section-to-explain
+                                               (call GetMetadata title ?f)))
+                                  (role-ref ?newRole)) (explainSection! (?f ?l)))
+      (!startLDElement activity-structure ((title (call ConcatText explain
+                                                        (call GetMetadata title ?f)))))
+      (explain! ?f ?l)
+      (illustrateWithSingleExample! ?f ?l)
+      (!endLDElement activity-structure)
+      (!endLDElement role-part))
+     
+     ((assign ?newRole (call GetNewRole (?l))))
+     ((!addUserToRole ?l ?newRole)
+      (!startLDElement role-part ((title (call ConcatText section-to-explain
+                                               (call GetMetadata title ?f)))
+                                  (role-ref ?newRole)) (explainSection! (?f ?l)))
+      (!startLDElement activity-structure ((title (call ConcatText explain
+                                                        (call GetMetadata title ?f)))))
+      (explain! ?f ?l)
+      (illustrate! ?f ?l)
+      (!endLDElement activity-structure)
+      (!endLDElement role-part)))
+   
+   (:method (explain! ?f ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getCompetences ?unsortCompetences ((class Competence)
+                                          ;(property hasLearningContext ?el)
+                                          (relation isFor ?f)))
+      (assign ?competences (call Sort ?unsortCompetences inverseIsRequiredBy))
+      (assignIterator ?c ?competences)
+      (getResources ?resources ((class Remark)
+                                (property hasLearningContext ?el)
+                                (relation hasEducationalObjective ?c)))
+      (assignIterator ?r ?resources))
+     ((!startLDElement learning-activity ((title (call ConcatText activity-to-explain
+                                                       (call GetMetadata title ?f))))
+                       (explain! (?f)))
+      (!startLDElement activity-description ((title (call ConcatText activity-to-explain
+                                                          (call GetMetadata title ?f)))))
+      (insertAuxOnceIfReady! ?r ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)))
+   
+   ;; practice fundamental section
+   (:method (practiceFundamentalSection ?f)
+     ()
+     ((practiceFundamentalSection! ?f))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (practiceFundamentalSection! ?f)
+     ()
+     ((!startLDElement act ((title (call ConcatText section-to-practice-fundamental
+                                         (call GetMetadata title ?f))))
+                       (practiceFundamentalSection! (?f)))
+      (practiceSection ?f)
+      (!endLDElement act)))
+   
+   (:method (practiceSection ?f)
+     ((forall (?l) ((learner ?l))
+              (practiceSection ?f ?l)))
+     ()
+     
+     ((learner ?l)
+      (not (practiceSection ?f ?l)))
+     ((practiceSection! ?f ?l)
+      (!!addInWorldState (practiceSection ?f ?l))  ;; review --> (gcc)
+      (practiceSection ?f)))
+   
+   (:method (practiceSection! ?f ?l)
+     ((assign ?newRole (call GetNewRole (?l))))
+     ((!addUserToRole ?l ?newRole)
+      (!startLDElement role-part ((title (call ConcatText section-to-practice
+                                               (call GetMetadata title ?f)))
+                                  (role-ref ?newRole))
+                       (practiceSection! (?f ?l)))
+      (train! ?f ?l)
+      (!endLDElement role-part)))
+   
+   
+   ;; ???????????????????????????????????????
+   
+   (:operator (!!changeScenario ?newScenario)
+     ((scenario ?oldScenario))
+     ((scenario ?oldScenario))
+     ((scenario ?newScenario)))
+   
+   (:operator (!!setArchieved ?task)
+     ()
+     ()
+     ((archived ?task)))
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   
+   
+   
+   (:method (descriptionScenarioSection ?concepts)
+     ()
+     (
+      ;(!startSection Description ?concepts)
+      ;(text Description ?parameters)
+      ;(!endSection)
+                      ))
+   
+   ;; each competence have this two formats   
+   ;;(getCompetences ?result ?query)
+   ;;(same ?query ((class Competence)
+   ;;              (relation isFor ?concept)
+   ;;              (property hasLevel ?level)))
+   ;;(same ?query ((class Skill)
+   ;;             (relation isFor ?comp)
+   ;;              (property hasLevel ?slevel)))
+   ;;(same ?query ((class Knowledge)
+   ;;              (relation isFor ?comp)
+   ;;              (property hasLevel ?klevel)))
+   ;;(same ?query ((class Competence)
+   ;;              (class SubCompetence)
+   ;;              (property hasLevel ?level)
+   ;;              (relation isRequiredBy ?comp)
+   ;;              (relation isFor ?comp)))
+   ;;(assignIterator ?slevel (nothing rough explanation associative autonomous))
+   ;;(assignIterator ?klevel (nothing accretion tuning restructuring))
+   ;;(getCompeteces ?result ((class Competence)
+   ;;                        (relation isFor ?c)
+   ;;                        (property hasLevel s1)
+   ;;                        (property hasKnowledge k2)))
+   
+   
+   ;; prove fundamental section
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   (:method (proveFundamentalSection ?c)
+     ()
+     ((proveFundamentalSection! ?c))
+     ;; fall-back
+     ()
+     ())
+   
+   (:method (proveFundamentalSection! ?c)
+     ()
+     ((!startLDElement act ((title (call ConcatText section-that-prove
+                                         (call GetMetadata title ?c))))
+                       (proveFundamentalSection! (?c)))
+      ;(text Prove (?c)) --> think in a way to replace this develop
+      (proveSection ?c)
+      (!endLDElement act)))
+   
+   (:method (proveSection ?c)
+     ((forall (?l) ((learner ?l)) (proveSection ?c ?l)))
+     ()
+     
+     ((learner ?l) (not (proveSection ?c ?l)))
+     ((proveSection! ?c ?l)
+      (!!addInWorldState (proveSection ?c ?l))  ;; --> this task must be part of proveSection (gcc)
+      (proveSection ?c)))
+   
+   (:method (proveSection! ?c ?l)
+     ((assign ?newRole (call GetNewRole (?l))))
+     ((!addUserToRole ?l ?newRole)
+      (!startLDElement role-part ((title (call ConcatText activity-to-prove
+                                               (call GetMetadata title ?c)))
+                                  (role-ref ?newRole)))
+      (!startLDElement activity-structure ((title (call ConcatText activities-to-prove
+                                                        (call GetMetadata title ?c))))
+                                           (proveSection! (?c ?l)))
+      (prove! ?c ?l)
+      (!endLDElement activity-structure)
+      (!endLDElement role-part)))
+   
+;   (:method (prove! ?c ?l)
+;     ((learnerProperty ?l hasCompetenceArgue ?c ?argue)
+;      (call >= ?argue 3)
+;      (learnerProperty ?l hasEducationalLevel ?el)
+;      (assignIterator ?exercise (call GetResources
+;                                      ((class Exercise)
+;                                       (relation isFor ?c)
+;                                       (property hasLearningContext ?el)
+;                                       (property hasCompetence argue)))))
+;     ((!startLDElement learning-activity ((title Prove)) (prove! (?c)))
+;      (!startLDElement activity-description ((title ?c)))
+;      (insertAuxOnceIfReady! ?exercise ?c)
+;      (!endLDElement activity-description)
+;      (!endLDElement learning-activity)))
+   
+   (:method (prove! ?c ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getResources ?visualProofsUnsorted
+                    ((class Evidence)
+                     (relation isFor ?c)
+                     (property hasLearningContext ?el)
+                     (property hasRepresetationType video)))
+      (assign ?visualProofs
+              (call Sort ?visualProofsUnsorted isRequiredBy))
+      (getResources ?verbalProofsUnsorted
+                    ((class Evidence)
+                     (relation isFor ?c)
+                     (property hasLearningContext ?el)
+                     (property hasRepresetationType audio)))
+      (assign ?verbalProofs
+              (call Sort ?verbalProofsUnsorted isRequiredBy))
+      (getResources ?numericProofsUnsorted
+                    ((class Evidence)
+                     (relation isFor ?c)
+                     (property hasLearningContext ?el)
+                     (property hasRepresetationType application)))
+      (assign ?numericProofs
+              (call Sort ?numericProofsUnsorted isRequiredBy))
+      (getResources ?symbolicProofsUnsorted
+                    ((class Evidence)
+                     (relation isFor ?c)
+                     (property hasLearningContext ?el)
+                     (property hasRepresetationType text)))
+      (assign ?symbolicProofs
+              (call Sort ?symbolicProofsUnsorted isRequiredBy))
+      ;; concat all
+      (assign ?allWithRep
+              (call Concat ?visualProofs ?verbalProofs
+                    ?numericProofs ?symbolicProofs))
+      (getResources ?allProofsUnsorted                    
+                    ((class Evidence)
+                     (relation isFor ?c)
+                     (property hasLearningContext ?el)))
+      (assign ?allProofs
+              (call Sort ?allProofsUnsorted isRequiredBy))
+      (assign ?allProofsWithoutRep
+              (call Restrict ?allProofs ?allWithRep))
+      (assign ?all
+              (call Concat ?visualProofs ?visualProofs ?verbalProofs
+                    ?numericProofs ?symbolicProofs ?allProofsWithoutRep))
+      (not (same ?all nil)))
+     ((!startLDElement learning-activity ((title (call ConcatText prove-concept
+                                                       (call GetMetadata title ?c) activity)))
+                       (prove! (?c)))
+      (!startLDElement activity-description)
+      (!insertResource (call GetMetadata abstractness ?c) ?l) ;; --> review this task
+      (!endLDElement activity-description)
+      (!startLDElement learning-object ((isvisible true)
+                                        (type knowledge-object)
+                                        (title (call ConcatText learn
+                                                     (call GetMetadata title ?c) by-prove)))
+                       (prove! (?c ?l)))
+      (insertAllResources ?all ?l)
+      (!endLDElement learning-object)
+      ;(practiceCompetenceForAllFundamentals argue ?all)
+      (!endLDElement learning-activity)))
+   
+   ;; show connections fundamental section
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   (:method (showConnectionsFundamentalSection ?c)
+     ()
+     ((showConnectionsFundamentalSection! ?c))
+     ;; fallback
+     ()
+     ())
+   
+   (:method (showConnectionsFundamentalSection! ?c)
+     ()
+     ((!startLDElement act ((title (call ConcatText show-connections-of
+                                         (call GetMetadata title ?c))))
+                       (showConnectionsFundamentalSection! (?c)))
+      (showConnectionsSection ?c)
+      (!endLDElement act)))
+   
+   (:method (showConnectionsSection ?c)
+     ((forall (?l) ((learner ?l)) (showConnectionsSection ?c ?l)))
+     ()
+     
+     ((learner ?l) (not (showConnectionsSection ?c ?l)))
+     ((showConnectionsSection! ?c ?l)
+      (!!addInWorldState (showConnectionsSection ?c ?l))  ;; --> this task must be part of ... (gcc)
+      (showConnectionsSection ?c)))
+   
+   (:method (showConnectionsSection! ?c ?l)
+     ((assign ?newRole (call GetNewRole (?l))))
+     ((!addUserToRole ?l ?newRole)
+      (!startLDElement role-part ((title (call ConcatText section-for-show-connections-of
+                                               (call GetMetadata title ?c)))
+                                  (role-ref ?newRole)))
+      (!startLDElement activity-structure ((title (call ConcatText show-connections-of
+                                               (call GetMetadata title ?c) with-activities)))
+                       (showConnectionsSection! (?c ?l))) 
+      (showConnectionsByCMap! ?c ?l)
+      (showConnectionsByTheoremWithProof! ?c ?l)
+      (!endLDElement activity-structure)
+      (!endLDElement role-part)))
+   
+   (:method (showConnectionsByCMap! ?c ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getResources ?resources ((class Law)
+                                (relation isRequiredBy ?c)
+                                (property hasLearningContext ?el)))
+      (assignIterator ?r ?resources))
+     ((!startLDElement learning-activity ((title show-connections-by-CMap))
+                       (showConnectionsByCMap! (?c)))
+      (!startLDElement activity-description ((title (call ConcatText show-CMap-for
+                                                          (call GetMetadata title ?c)))))
+      (insertResourceOnce! ?r ?l)
+      (!endLDElement activity-description)
+      ;(!insertLearningService CMap display (?c)
+      ;                        (includeEdge1 isRequieredBy includeEdge2 isA
+      ;                                      includeEdge3 inverseIsA includeCategory1 Definition
+      ;                                      includeCategory2 Law computeNeighbourNodes 1))
+      (!endLDElement learning-activity)))
+   
+   (:method (showConnectionsByTheoremWithProof! ?c ?l)
+     ((learnerProperty ?l hasEducationalLevel ?el)
+      (getResources ?allTheoremsH ((class Law)
+                                   (relation isRequiredBy ?c)
+                                   (property hasLearningContext ?el)))
+      (getNonTargetFundamentals ?allTheoremsHH ?allTheoremsH)
+      (getNonInserted ?allTheorems ?allTheoremsHH)
+      (assign ?sortedTheorems (call Sort ?allTheorems (((class Law)
+                                                        (relation isRequiredBy ?allTheorems)
+                                                        (property hasLearningContext ?el)))))
+      (not (same ?sortedTheorems nil))
+      (not (same ?allTheoremsH nil)))
+     ((showConnectionsTheoremsWithProof ?sortedTheorems ?l)
+      (!startLDElement activity-structure ((title (call ConcatText show-connections-by-theorem-with-proof-about
+                                                  (call GetMetadata title ?c))))
+                       (showConnectionsByTheoremWithProof! (?c ?l)))
+      (showConnectionsTheoremsWithProof ?allTheoremsH)
+      (!endLDElement activity-structure)))
+   
+   (:method (showConnectionsTheoremsWithProof nil ?l)()())
+   (:method (showConnectionsTheoremsWithProof (?theorem . ?sortedTheorems) ?l)
+     ()
+     ((showConnectionsTheoremWithProof ?theorem ?l)
+      (showConnectionsTheoremsWithProof ?sortedTheorems ?l)))
+   
+   (:method (showConnectionsTheoremWithProof ?theorem ?l)
+     ()
+     ((!startLDElement activity-structure ((title (call ConcatText activities-for-show-connections-of
+                                                        (call GetMetadata title ?c))))
+                       (showConnectionsTheoremWithProof (?theorem)))
+      (!startLDElement learning-activity ((title (call ConcatText proof-with
+                                                       (call GetMetadata title ?theorem))))
+                       (showConnectionsTheoremWithProof (?theorem)))
+      (!startLDElement activity-description ((title (call GetMetadata title ?theorem))))
+      (insertResourceOnce! ?theorem ?l)
+      (!endLDElement activity-description)
+      (!endLDElement learning-activity)
+      (explain! ?theorem ?l)
+      (!endLDElement activity-structure)))
+   
+   ;; pedagogical task reflect fundamentals data
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;#   (:method (reflect ?concepts)
+;#     ((learningServiceAvailable OLM))
+;#     ((!startSection Reflection ?concepts (reflect ?concepts))
+;#      (!insertLearningService OLM display ?concepts (competenceId competence))
+;#      (!endSection))
+;#     
+;#     ()
+;#     ((!startSection Reflection ?concepts (reflect ?concepts))
+;#      (text Reflect ?concepts)
+;#      (!endSection)))
+   
+   ;; pedagogical axions to
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; (:- (sortByKnowledge ?result ?competences)
+   ;;   (assign ?result ?competences))
+   
+   ;; existe elemento na lista
+   (:- (exist ?element (?element . ?rest))())
+   (:- (exist ?element (?head . ?rest))(exist ?element ?rest))
+   
+   ))
